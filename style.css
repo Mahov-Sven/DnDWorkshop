@@ -1,0 +1,15 @@
+#MAIN_CONTAINER{
+	background-color: #333333;
+	width: 100%;
+	height: 100%;
+}
+
+#BUTTON_DICE{
+	background-color: #4D4D4D;
+	background-image: url("resources/die.png");
+	background-blend-mode: darken;
+	background-size: 100% 100%;
+    background-repeat: no-repeat;
+	width: 100%;
+	height: 100%;
+}
