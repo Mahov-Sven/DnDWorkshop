@@ -1,14 +1,41 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>D&D Workshop</title>
 	<link rel='stylesheet' type='text/css' href='style.css'/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<script src="lib/three/three.js"></script>
+	<script src="lib/physijs/physi.js"></script>
 	<script type="text/javascript" src="script.js"></script>
 </head>
 <body>
-	<div id="MAIN_CONTAINER">
-		<div id="BUTTON_DICE"></div>
-	</div>
+	<table class="FullTable" style="position: fixed">
+		<tr>
+			<td id="MAIN_TOPBAR_CONTAINER">
+				<div id="MAIN_TOPBAR">
+					<div id="BUTTON_DICE" class="TopbarObject"></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td id="MAIN_CONTENT_CONTAINER">
+				<table class="FullTable">
+					<tr>
+						<td id="CONTENT_CONTAINER">
+							
+						</td>
+						<td id="MAIN_SIDEBAR" class="hide">
+							
+						</td>
+					</tr>
+				</table>
+				
+				<div id="CANVAS_OVERLAY" class="hide">
+	
+				</div>
+			</td>
+		</tr>
+	</table>
 </body>
 </html>	
