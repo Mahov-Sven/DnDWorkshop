@@ -4,6 +4,18 @@ $(document).ready(function () {
 	
 	var showDice = false;
 	
+	function getRenderingWidth(){
+		return $("#CANVAS_OVERLAY").width();
+	}
+	
+	function getRenderingHeight(){
+		return $("#CANVAS_OVERLAY").height();
+	}
+	
+	function getRenderingRatio(){
+		return getRenderingWidth()/getRenderingHeight();
+	}
+	
 	// ------------- END OF MAIN JAVASCRIPT STUFF -------------
 	
 	// ------------- 3D JAVASCRIPT STUFF -------------
@@ -12,7 +24,7 @@ $(document).ready(function () {
 	Physijs.scripts.ammo = "ammo.js";
 	
 	var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true});
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setSize( getRenderingWidth(), getRenderingHeight() );
 	renderer.setClearColor( 0x000000, 0.5 )
 	renderer.domElement.style.position = "absolute";
 	document.getElementById("CANVAS_OVERLAY").appendChild( renderer.domElement );
@@ -21,7 +33,7 @@ $(document).ready(function () {
 
 	var camera = new THREE.PerspectiveCamera(
 		35,
-		window.innerWidth / window.innerHeight,
+		getRenderingRatio(),
 		1,
 		1000
 	);
@@ -50,14 +62,27 @@ $(document).ready(function () {
 	// ------------- JQUERY STUFF -------------
 	
 	$(window).resize(function(){
-		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.aspect = getRenderingRatio();
 		camera.updateProjectionMatrix();
 		
-		renderer.setSize(window.innerWidth, window.innerHeight);
+		renderer.setSize(getRenderingWidth(), getRenderingHeight());
 	});
 	
 	$("#BUTTON_DICE").mouseup(function(){
 		$("#CANVAS_OVERLAY").toggleClass("hide");
+		$("#BUTTON_DICE").toggleClass("BUTTON_DICE_SHOW");
+		showDice = !showDice;
+		
+		if(showDice){
+			scene.onSimulationResume();
+		}
+	});
+	
+	//Function executed when clicking on the menuBox.
+	$("#menuBox").toggle(function(){
+		showMenu();
+	}, function(){
+		hideMenu();
 	});
 	
 	// ------------- END OF JQUERY STUFF -------------

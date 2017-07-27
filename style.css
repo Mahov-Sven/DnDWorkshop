@@ -18,13 +18,35 @@
     background-repeat: no-repeat;
 	height: 40pt;
 	width: 40pt;
+	float: left;
 }
 
 #BUTTON_DICE:active {
-	background-color: #333333;
+	background-color: #202020 !important;
+}
+
+.BUTTON_DICE_SHOW {
+	background-color: #333333 !important;
+	border-bottom: 1pt solid #333333;
+}
+
+#BUTTON_MENU {
+	background-color: #4D4D4D;
+	height: 40pt;
+	width: 40pt;
+	float: left;
+}
+
+#BUTTON_MENU:active {
+	background-color: #202020 !important;
+}
+
+.BUTTON_MENU_SHOW {
+	background-color: #333333 !important;
 }
 
 #MAIN_CONTENT_CONTAINER {
+	position: relative;
 	background-color: #333333;
 	width: 100%;
 	height: auto;
@@ -43,13 +65,11 @@
 }
 
 #CANVAS_OVERLAY {
-	position: fixed;
+	position: absolute;
 	width: 100%;
 	height: 100%;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
+    right: 0;
+    top: 0;
 }
 
 .FullTable {
@@ -67,8 +87,12 @@
 	border-right: 1pt solid #000000;
 }
 
-.TopbarObject:active {
-	border-bottom: 1pt solid #333333;
+.MenuAnimBar{
+	border: 1pt solid #fafafa;
+	border-radius: 2pt;
+	margin: 3pt 5pt 9pt 5pt;  
+	transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+	transform-origin: left;
 }
 
 *{
