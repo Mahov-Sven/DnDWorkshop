@@ -23,11 +23,12 @@
 
 #BUTTON_DICE:active {
 	background-color: #202020 !important;
+	border-bottom: 1pt solid #202020 !important;
 }
 
 .BUTTON_DICE_SHOW {
 	background-color: #333333 !important;
-	border-bottom: 1pt solid #333333;
+	border-bottom: 1pt solid #333333 !important;
 }
 
 #BUTTON_MENU {
@@ -39,10 +40,25 @@
 
 #BUTTON_MENU:active {
 	background-color: #202020 !important;
+	border-bottom: 1pt solid #202020 !important;
 }
 
 .BUTTON_MENU_SHOW {
 	background-color: #333333 !important;
+	border-bottom: 1pt solid #333333 !important;
+}
+
+.MenuAnimSpacer {
+	height: 5%;
+}
+
+.MenuAnimBar {
+	background-color: #000000;
+	height: 10%;
+	width: 50%;
+	margin: 15% 25%;
+	transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+	transform-origin: left;
 }
 
 #MAIN_CONTENT_CONTAINER {
@@ -52,9 +68,49 @@
 	height: auto;
 }
 
+.UnfocusContentContainer {
+	background-color: #4D4D4D !important;
+}
+
 #CONTENT_CONTAINER {
 	width: auto;
 	height: 100%;
+}
+
+#CONTENT {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+#MENU {
+	position: absolute;
+	float: left;
+	border-right: 1pt solid #000000;
+	border-bottom: 1pt solid #000000;
+	background-color: #333333;
+}
+
+.MenuSelection {
+	
+}
+
+.MenuSelection:hover {
+	background-color: #222222;
+}
+
+.MenuSelection:active {
+	background-color: #111111;
+}
+
+.MenuSelectionText {
+	color: #DAE8FC;
+	font-size: 24pt;
+	font-family: "Helvetica";
+}
+
+.MenuSelectionImg {
+	
 }
 
 #MAIN_SIDEBAR {
@@ -72,6 +128,8 @@
     top: 0;
 }
 
+/* UTIL CLASSES */
+
 .FullTable {
 	width: 100%;
 	height: 100%;
@@ -87,12 +145,16 @@
 	border-right: 1pt solid #000000;
 }
 
-.MenuAnimBar{
-	border: 1pt solid #fafafa;
-	border-radius: 2pt;
-	margin: 3pt 5pt 9pt 5pt;  
-	transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-	transform-origin: left;
+.Fade {
+	opacity: 0;
+}
+
+.RotateUp45 {
+    transform: rotate(-45deg);
+}
+
+.RotateDown45 {
+    transform: rotate(45deg);
 }
 
 *{
