@@ -42,7 +42,7 @@ $(document).ready(function () {
 				$("#MENU_ANIM_BAR_M").stop().removeClass("Fade");
 				$("#MENU_ANIM_BAR_B").stop().removeClass("RotateUp45").animate({width: "50%"});
 				$("#MAIN_CONTENT_CONTAINER").removeClass("UnfocusContentContainer");
-				$("#MENU").stop(true,true).slideUp();
+				$("#MENU").stop().animate({top: -$("#MENU").height() }, function(){$("#MENU").hide()} );
 				break;
 		}
 	}
@@ -61,11 +61,12 @@ $(document).ready(function () {
 				
 			case 2:
 				$("#BUTTON_MENU").addClass("BUTTON_MENU_SHOW");
-				$("#MENU_ANIM_BAR_T").stop().addClass("RotateDown45").animate({width: "70.7%"});
+				$("#MENU_ANIM_BAR_T").stop().addClass("RotateDown45").animate({width: "70%"});
 				$("#MENU_ANIM_BAR_M").stop().addClass("Fade");
-				$("#MENU_ANIM_BAR_B").stop().addClass("RotateUp45").animate({width: "70.7%"});
+				$("#MENU_ANIM_BAR_B").stop().addClass("RotateUp45").animate({width: "70%"});
 				$("#MAIN_CONTENT_CONTAINER").addClass("UnfocusContentContainer");
-				$("#MENU").stop(true,true).slideDown();
+				$("#MENU").show();
+				$("#MENU").animate({top: "0"});
 				break;
 		}
 	}
@@ -143,4 +144,6 @@ $(document).ready(function () {
 	$("#BUTTON_MENU").mouseup(function(){
 		updateTabs(2);
 	});
+	
+	$("#MENU").stop().animate({top: -$("#MENU").height() }, function(){$("#MENU").hide()} );
 });
