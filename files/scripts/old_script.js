@@ -87,7 +87,7 @@ $(document).ready(function () {
 	
 	// ------------- 3D JAVASCRIPT STUFF -------------
 	
-	Physijs.scripts.worker = "lib/physijs/physijs_worker.js";
+	Physijs.scripts.worker = "files/lib/physijs/physijs_worker.js";
 	Physijs.scripts.ammo = "ammo.js";
 	
 	var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true});

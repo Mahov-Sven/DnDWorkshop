@@ -1,0 +1,4 @@
+MEANING:	D&D HTML document
+USE:		Containing smaller parts of HTML which are not mean to be pages themselves, but rather should be loaded at runtime.
+
+FORMAT:		Basic HTML

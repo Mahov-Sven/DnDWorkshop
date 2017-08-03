@@ -1,0 +1,10 @@
+New.Campaign: [PAGE_NAME_THAT_IT_OPENS];
+New.Character: [...];
+New.Location: [...];
+New.Storybord: [...];
+New.Ruleset: [...];
+Campaign.New: [...];
+Campaign.Open: [...];
+Campaign.Get_Character: [...];
+Save.Online: [...];
+Save.Local: [...];

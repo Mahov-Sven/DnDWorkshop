@@ -12,7 +12,7 @@
 
 #BUTTON_DICE {
 	background-color: #4D4D4D;
-	background-image: url("res/Die.png");
+	background-image: url("../res/Die.png");
 	background-blend-mode: darken;
 	background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -127,7 +127,7 @@
 
 .MenuSelectionImg {
 	display: table-cell;
-	background-image: url("res/SubMenuArrow.png");
+	background-image: url("../res/SubMenuArrow.png");
 	background-size: 100% 100%;
     background-repeat: no-repeat;
 	min-height: 20pt;
