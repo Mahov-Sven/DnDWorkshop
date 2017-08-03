@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>D&D Workshop</title>
+	<script src="../lib/three/three.js"></script>
+	<script src="../lib/physijs/physi.js"></script>
+</head>
+<body>
+	<div id="CONTENT">
+		<div id="ADD_DICE" style="position: absolute; background-color: green; font-size: 24pt; z-index: 100; width: 30pt; height: 30pt;"></div>
+	</div>
+	<style>
+	*{
+		top: 0;
+		left: 0;
+	}
+	</style>
+	<script>
+		
+		var released = false;
+		var mousePresses = 0;
+		var firstMouseMove = true;
+		var previousMouseX;
+		var previousMouseY;
+		var deltaX = 0;
+		var deltaY = 0;
+		var diceCount = 0;
+		var DICE_WIDTH = 5;
+		var DICE_HALF_WIDTH = DICE_WIDTH / 2;
+		var MAX_DICE = DICE_WIDTH * DICE_WIDTH;
+		var die = [];
+		var vec = new THREE.Vector3();
+	
+		function getRenderingWidth(){
+			return window.innerWidth;
+		}
+
+		function getRenderingHeight(){
+			return window.innerHeight;
+		}
+
+		function getRenderingRatio(){
+			return getRenderingWidth()/getRenderingHeight();
+		}
+		
+		function createDirLight(color, x, y, z, targetPosition, castShadow){
+			var light = new THREE.DirectionalLight(color);
+			light.position.set(x, y, z);
+			light.target.position.copy(targetPosition);
+			light.castShadow = castShadow;
+			light.shadow.camera.left = -30;
+			light.shadow.camera.top = -30;
+			light.shadow.camera.right = 30;
+			light.shadow.camera.bottom = 30;
+			light.shadow.camera.near = 20;
+			light.shadow.camera.far = 200;
+			light.shadow.Bias = -0.001;
+			light.shadow.mapSize.Width = 2048;
+			light.shadow.mapSize.Height = 2048;
+			
+			return light;
+		}
+		
+		function createBox(width, height, girth, x, y, z, hexColor, mass, restitutionValue, frictionValue ){
+			var box = new Physijs.BoxMesh(
+				new THREE.CubeGeometry( width, height, girth ),
+				new THREE.MeshBasicMaterial({ color:  hexColor}),
+				mass,
+				{restitution: restitutionValue, friction: frictionValue}
+			);
+			
+			box.position.x = x;
+			box.position.y = y;
+			box.position.z = z;
+			
+			box.recieveShadow = true;
+			box.castShadow = true;
+			
+			return box;
+		}
+		
+		function createDice(x, y){
+			return createBox(1, 1, 1, x, 5, y, 0x888888, 0, 0.2, 0.8);
+		}
+		
+		function createStaticBox(width, height, girth, x, y, z, hexColor, restitutionValue, frictionValue ){
+			var box = new Physijs.BoxMesh(
+				new THREE.CubeGeometry( width, height, girth ),
+				new THREE.MeshBasicMaterial({ color:  hexColor}),
+				0,
+				{restitution: restitutionValue, friction: frictionValue}
+				
+			);
+			
+			box.position.x = x;
+			box.position.y = y;
+			box.position.z = z;
+			
+			box.recieveShadow = true;
+			
+			return box;
+		}
+		
+		function addDice(){
+			if(diceCount == MAX_DICE){
+				return;
+			}
+			
+			
+			var x = 1.5 * (Math.floor(diceCount / DICE_WIDTH) - DICE_HALF_WIDTH + 0.5);
+			var y = 1.5 * (diceCount % DICE_WIDTH - DICE_HALF_WIDTH + 0.5);
+			
+			var dice = createDice(x, y);
+			scene.add(dice);
+			die.push(dice);
+			
+			diceCount++;
+		}
+		
+		function updateVelocity(){
+			if(released || mousePresses !== 1){
+				return;
+			}
+			
+			for(var i = 0; i < diceCount; i++){
+				vec.set(deltaX / 100, 0, deltaY / 100);
+				die[i].setLinearVelocity(vec);
+			}
+		}
+		
+		function update(){
+			updateVelocity();
+			console.log(released);
+		}
+
+		Physijs.scripts.worker = "../lib/physijs/physijs_worker.js";
+		Physijs.scripts.ammo = "ammo.js";
+
+		var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true});
+		renderer.setSize( getRenderingWidth(), getRenderingHeight() );
+		renderer.setClearColor( 0x000000, 0.0 )
+		renderer.domElement.style.position = "absolute";
+		document.getElementById("CONTENT").appendChild( renderer.domElement );
+
+		var scene = new Physijs.Scene({fixedTimeStep: 1 / 120});
+		scene.setGravity(new THREE.Vector3(0, -32, 0));
+
+		var camera = new THREE.PerspectiveCamera(
+			35,
+			getRenderingRatio(),
+			1,
+			1000
+		);
+		camera.position.set( 0, 22, 0 );
+		camera.lookAt( scene.position );
+		scene.add( camera );
+		
+		// Light
+		var light = createDirLight(0xffffff, 20, 30, -0.5, scene.position, true);
+		scene.add(light);
+		
+		// Dice Platform Bottom
+		platform = createStaticBox(10, 1, 10, 0, 0, 0, 0x444444, 0.2, 0.8);
+		scene.add(platform);
+		
+		// Dice Platform Top
+		platform = createStaticBox(10, 10, 1, 0, 0, -5, 0x666666, 0.2, 0.8);
+		scene.add(platform);
+		
+		// Dice Platform Left
+		platform = createStaticBox(1, 10, 10, 5, 0, 0, 0x666666, 0.2, 0.8);
+		scene.add(platform);
+		
+		// Dice Platform Bottom
+		platform = createStaticBox(10, 10, 1, 0, 0, 5, 0x666666, 0.2, 0.8);
+		scene.add(platform);
+		
+		// Dice Platform Left
+		platform = createStaticBox(1, 10, 10, -5, 0, 0, 0x666666, 0.2, 0.8);
+		scene.add(platform);
+		
+		document.getElementById("ADD_DICE").addEventListener('mouseup', function(){
+			addDice();
+		});
+		
+		renderer.domElement.addEventListener('mouseup', function(){
+			if(mousePresses === 1){
+				released = true;
+				
+				for(var i = 0; i < diceCount; i++){
+					die[i].mass = 1;
+					vec.set(0, 0, 0);
+					die[i].applyCentralImpulse(vec);
+					console.log(die[i]);
+				}
+			}
+			
+			mousePresses++;
+		});
+		
+		renderer.domElement.addEventListener('mousemove', function(e){
+			if(!firstMouseMove){
+				deltaX = e.clientX - previousMouseX;
+				deltaY = e.clientY - previousMouseY;
+			}
+			
+			previousMouseX = e.clientX;
+			previousMouseY = e.clientY;
+			firstMouseMove = false;
+		});
+
+		function animate() {
+			requestAnimationFrame( animate );
+			update();
+			renderer.render( scene, camera );
+		}
+		
+		scene.simulate();
+		animate();
+	</script>
+</body>
+</html>
