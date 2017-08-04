@@ -25,7 +25,7 @@ $(document).ready(function () {
 	function updateTabs(newTab){
 		
 		disableTab(currentTab);
-		
+		console.log(newTab + " | " + currentTab);
 		if(newTab !== currentTab){
 			enableTab(newTab);
 			currentTab = newTab;
@@ -73,8 +73,7 @@ $(document).ready(function () {
 				$("#MENU_ANIM_BAR_M").stop().addClass("Fade");
 				$("#MENU_ANIM_BAR_B").stop().addClass("RotateUp45").animate({width: "70%"});
 				$("#MAIN_CONTENT_CONTAINER").addClass("UnfocusContentContainer");
-				$("#MENU").show();
-				$("#MENU").animate({top: "0"});
+				$("#MENU").show().stop().animate({top: "0"});
 				break;
 		}
 	}
