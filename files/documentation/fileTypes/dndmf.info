@@ -1,9 +1,9 @@
-MEANING:		D&D Menu File (or Menu Formatt)
-USE:			Contains the organiztion for the menu. Formatt designed to make submenu's easier to create and designate.
+MEANING:		D&D Menu File (or Menu Format)
+USE:			Contains the organization for the menu. Format designed to make submenu's easier to create and designate.
 
 FORMAT:			[SUBMENU_1].[SUBMENU_2]...[SUBMENU_N]: { [HTML_CONTAINER_ID], [D&D_HTML_FILE_LINK] }
 
-TAB(N):			The name of a given submenu. The basic formatt is usually capitalizing the beginning of each letter for
+TAB(N):			The name of a given submenu. The basic format is usually capitalizing the beginning of each letter for
 			each word, however this may differ if a different way appears better.
 
 HTML_CONTAINER_ID	The ID for which container the menu should load its content into once clicked.
