@@ -1,4 +1,9 @@
+var htmlExt = ".dndhtml";
+var menuFileExt = ".dndmf";
+var srtRegex = /[\n\r\s\t]+/g;
+
 var LOADER = {
+	loadFile: null,
 	loadHTML: null,
 	loadMenuFile: null,
 	loadPlayerFile: null,
@@ -10,74 +15,50 @@ var LOADER = {
 	loadEncounter: null,
 }
 
-LOADER.loadHTML = function(fileLocation, requireExtension){
-	return null;
+LOADER.loadFile = function(fileLocation, callback){
+	$.get(fileLocation, function(file){
+		callback(file);
+	});
 }
 
-LOADER.loadHTML = function(fileLocation){
-	return loadHTML(fileLocation, false);
+LOADER.loadHTML = function(fileLocation, callback){
+	LOADER.loadFile(fileLocation + htmlExt, function(html){
+		callback(html);
+	});
 }
 
-LOADER.loadMenuFile = function(fileLocation, requireExtension){
-	return null;
-}
-
-LOADER.loadMenuFile = function(fileLocation){
-	return loadMenuFile(fileLocation, false);
+LOADER.loadMenuFile = function(fileLocation, callback){
+	LOADER.loadFile(fileLocation + menuFileExt, function(file){
+		var trimmed = file.replace(srtRegex, '');
+		var menuArray = trimmed.split(";");
+		callback(menuArray);
+	});
 }
 
 LOADER.loadPlayerFile = function(fileLocation, requireExtension){
 	return null;
 }
 
-LOADER.loadPlayerFile = function(fileLocation){
-	return loadPlayerFile(fileLocation, false);
-}
-
 LOADER.loadRuleSet = function(fileLocation, requireExtension){
 	return null;
-}
-
-LOADER.loadRuleSet = function(fileLocation){
-	return loadRuleSet(fileLocation, false);
 }
 
 LOADER.loadSkillSet = function(fileLocation, requireExtension){
 	return null;
 }
 
-LOADER.loadSkillSet = function(fileLocation){
-	return loadSkillSet(fileLocation, false);
-}
-
 LOADER.loadSpellbook = function(fileLocation, requireExtension){
 	return null;
-}
-
-LOADER.loadSpellbook = function(fileLocation){
-	return loadSpellbook(fileLocation, false);
 }
 
 LOADER.loadInventory = function(fileLocation, requireExtension){
 	return null;
 }
 
-LOADER.loadInventory = function(fileLocation){
-	return loadInventory(fileLocation, false);
-}
-
 LOADER.loadItemShop = function(fileLocation, requireExtension){
 	return null;
 }
 
-LOADER.loadItemShop = function(fileLocation){
-	return loadItemShop(fileLocation, false);
-}
-
 LOADER.loadEncounter = function(fileLocation, requireExtension){
 	return null;
-}
-
-LOADER.loadEncounter = function(fileLocation){
-	return loadEncounter(fileLocation, false);
 }

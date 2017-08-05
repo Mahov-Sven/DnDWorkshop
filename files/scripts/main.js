@@ -17,6 +17,9 @@ $(document).ready(function () {
 	// ------------- INITIALIZATION STUFF -------------
 
 	DICE.init("files/lib/physijs/physijs_worker.js", "CANVAS_OVERLAY", $("#CANVAS_OVERLAY").width(), $("#CANVAS_OVERLAY").height());
+	LOADER.loadMenuFile("files/html/menu", function(html){
+		console.log(html);
+	});
 	
 	// ------------- END OF INITIALIZATION STUFF -------------
 	
