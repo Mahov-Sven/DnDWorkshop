@@ -3,14 +3,9 @@ var renderer;
 var scene;
 var camera;
 
-var DICE = {
-	init: null,
-	start: null,
-	stop: null,
-	resize: null,
-}
+function Dice(){}
 
-DICE.init = function(physicsWorkerLocation, canvasContainerID, renderingWidth, renderingHeight){
+Dice.prototype.init = function(physicsWorkerLocation, canvasContainerID, renderingWidth, renderingHeight){
 	Physijs.scripts.worker = physicsWorkerLocation;
 	Physijs.scripts.ammo = "ammo.js";
 	
@@ -49,19 +44,21 @@ DICE.init = function(physicsWorkerLocation, canvasContainerID, renderingWidth, r
 	animate();
 }
 
-DICE.start = function(){
+Dice.prototype.start = function(){
 	render = true;
 	scene.onSimulationResume();
 }
 
-DICE.stop = function(){
+Dice.prototype.stop = function(){
 	render = false;
 }
 
-DICE.resize = function(width, height){
+Dice.prototype.resize = function(width, height){
 	camera.aspect = width / height;
 	camera.updateProjectionMatrix();
 	
 	renderer.setSize(width, height);
 }
+
+var DICE = new Dice();
 
