@@ -85,9 +85,9 @@
 }
 
 .openPage {
-	background-color: #4D4D4D;
-	width: 60%;
-	height: 60%;
+	background-color: #E6E6E6;
+	width: 60%;	/*Change when scrolling is implemented.*/
+	height: 60%; /*Change to fit content.*/
 	border-radius: 4em;
 	text-align: center;
 }

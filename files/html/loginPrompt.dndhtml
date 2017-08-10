@@ -1,14 +1,12 @@
 <div class="openPage"><!-- Container -->
   <div><!-- Title -->
-    These are words!!!!!!!!!!!!
+    Log In
   </div>
-  <div><!-- Email -->
-    These are words!!!!!!!!!!!!
-  </div>
-  <div><!-- Password -->
-    These are words!!!!!!!!!!!!
-  </div>
+  <form>
+    <input type="email" placeholder="Email Address" /><br />
+    <input type="password" placeholder="Password" /><br />
+  </form>
   <div><!-- Login/create/forgot account -->
-    These are words!!!!!!!!!!!!
+    Submit
   </div>
 </div>
