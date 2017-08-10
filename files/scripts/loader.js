@@ -30,66 +30,33 @@ Loader.prototype.loadHTML = function(fileLocation, callback){
 /* ------------ MENU FILE LOADING ------------ */
 
 function createBaseMenu(){
-	var MenuContainer = createDiv();
-	MenuContainer.classList.add("MenuContainer");
+	var html =
+	'<div class = "MenuContainer">\n'+
+	'	<div id="MENU" style="display:none;">\n'+
+	'		<div class="Menu">\n'+ menuIdPrepend + '</div>\n'+
+	'	</div>\n'+
+	'</div>\n';
 	
-	var MENU = createDiv();
-	MENU.style.display = "none";
-	MENU.id = "MENU";
-	
-	var menu = createDiv();
-	menu.classList.add("Menu");
-	menu.id = menuIdPrepend + "";
-	
-	MENU.appendChild(menu);
-	MenuContainer.appendChild(MENU);
-	
-	console.log(MenuContainer);
-	return MenuContainer;
+	console.log(html);
+	return html;
 }
 
-function createSubMenu(MenuPath){
-	var SubMenuContainer = createDiv();
-	SubMenuContainer.classList.add("SubMenuContainer");
+function createMenuSelection(MenuPath, MenuName){
 	
-	var MenuContainer = createDiv();
-	MenuContainer.classList.add("MenuContainer");
+	var html =
+	'<div class="MenuSelection">\n'+
+	'	<div class="MenuSelectionText">' + MenuName + '</div>\n'+
+	'	<div class="MenuSelectionImg" style="display: none;"></div>\n'+
+	'	<div class="SubMenuContainer">\n'+
+	'		<div class="MenuContainer">\n'+
+	'			<div class="Menu">\n' + menuIdPrepend + MenuPath + '</div>\n'+
+	'		</div>\n'+
+	'	</div>\n'+
+	'</div>\n';
 	
-	var menu = createDiv();
-	menu.classList.add("Menu");
-	menu.id = menuIdPrepend + MenuPath;
+	console.log(html);
 	
-	MenuContainer.appendChild(menu);
-	SubMenuContainer.appendChild(MenuContainer);
-	
-	return SubMenuContainer;
-}
-
-function createMenuSelection(MenuName, MenuPath){
-	var MenuSelection = createDiv();
-	MenuSelection.classList.add("MenuSelection");
-	
-	var MenuSelectionText = createDiv();
-	MenuSelectionText.classList.add("MenuSelectionText");
-	MenuSelectionText.innerHTML = MenuName;
-	
-	var MenuSelectionImg = createDiv();
-	MenuSelectionImg.classList.add("MenuSelectionImg");
-	MenuSelectionImg.style.display = "none";
-	
-	var MenuSelectionSubMenu = createSubMenu(MenuPath);
-	
-	MenuSelection.appendChild(MenuSelectionText);
-	MenuSelection.appendChild(MenuSelectionImg);
-	MenuSelection.appendChild(MenuSelectionSubMenu);
-	
-	console.log(MenuSelection);
-	
-	return MenuSelection;
-}
-
-function attatchMenu(parentName, menuName){
-	
+	return html;
 }
 
 Loader.prototype.loadMenuFile = function(fileLocation, callback){
@@ -99,14 +66,24 @@ Loader.prototype.loadMenuFile = function(fileLocation, callback){
 		var html = "";
 		
 		var base = createBaseMenu();
-		var subm = createMenuSelection("TEST", "MAIN.SUB");
+		var subm = createMenuSelection("Main.Sub", "Test");
 		
 		for(var i = 0; i < menuArray.length; i++){
 			var submenuData = menuArray[i].split(":");
-			var submenu = submenuData[0].split(".");
+			var submenuPathParts = submenuData[0].split(".");
+			var submenuDataSplitLocation = submenuData[0].lastIndexOf(".");
+			var submenuPath = submenuData[0].slice(0, submenuDataSplitLocation);
+			var submenuName = submenuData[0].slice(submenuDataSplitLocation + 1, submenuData[0].length);
 			var data = submenuData[1].substring(1, submenuData[1].length - 1).split(",");
-			console.log(submenu);
-			console.log(data);
+			
+			var currentPath = "";
+			for(var j = 0; j < submenuPathParts.length; j++){
+				var lookupPath = menuIdPrepend + currentPath + (currentPath.length > 0 ? "." : "") + submenuPathParts[j];
+				
+				
+				
+				currentPath += (j === 0 ? "" : ".") + submenuPathParts[j];
+			}
 		}
 		
 		callback(menuArray);
