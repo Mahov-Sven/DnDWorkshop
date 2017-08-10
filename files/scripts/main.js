@@ -13,20 +13,20 @@ $(document).ready(function () {
 	LOADER => The loader.js file. Loads files.
 
 	*/
-	
+
 	// ------------- INITIALIZATION STUFF -------------
 
 	DICE.init("files/lib/physijs/physijs_worker.js", "CANVAS_OVERLAY", $("#CANVAS_OVERLAY").width(), $("#CANVAS_OVERLAY").height());
 	LOADER.loadMenuFile("files/html/menu", function(html){
 		console.log(html);
 	});
-	
+
 	// ------------- END OF INITIALIZATION STUFF -------------
-	
+
 	// ------------- MAIN JAVASCRIPT STUFF -------------
 
 	function updateTabs(newTab){
-		
+
 		disableTab(currentTab);
 		console.log(newTab + " | " + currentTab);
 		if(newTab !== currentTab){
@@ -41,13 +41,13 @@ $(document).ready(function () {
 		switch(tab){
 			case 0:
 				break;
-				
+
 			case 1:
 				$("#CANVAS_OVERLAY").addClass("hide");
 				$("#BUTTON_DICE").removeClass("BUTTON_DICE_SHOW");
 				DICE.stop();
 				break;
-				
+
 			case 2:
 				$("#BUTTON_MENU").removeClass("BUTTON_MENU_SHOW");
 				$("#MENU_ANIM_BAR_T").stop().removeClass("RotateDown45").animate({width: "50%"});
@@ -63,13 +63,13 @@ $(document).ready(function () {
 		switch(tab){
 			case 0:
 				break;
-				
+
 			case 1:
 				$("#CANVAS_OVERLAY").removeClass("hide");
 				$("#BUTTON_DICE").addClass("BUTTON_DICE_SHOW");
 				DICE.start();
 				break;
-				
+
 			case 2:
 				$("#BUTTON_MENU").addClass("BUTTON_MENU_SHOW");
 				$("#MENU_ANIM_BAR_T").stop().addClass("RotateDown45").animate({width: "70%"});
@@ -100,5 +100,8 @@ $(document).ready(function () {
 	$("#MENU").stop().animate({top: -$("#MENU").height() }, function(){$("#MENU").hide()} );
 
 	// ------------- END OF JQUERY STUFF -------------
-});
 
+	// ------------- Temporary for testing -------------
+	$("#CONTENT").load("files/html/loginPrompt.dndhtml");
+	// ------------- End Temporary -------------
+});

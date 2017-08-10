@@ -84,6 +84,14 @@
 	overflow: hidden;
 }
 
+.openPage {
+	background-color: #4D4D4D;
+	width: 60%;
+	height: 60%;
+	border-radius: 4em;
+	text-align: center;
+}
+
 #MENU {
 	position: relative;
 }
