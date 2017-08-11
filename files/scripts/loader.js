@@ -33,7 +33,9 @@ function createBaseMenu(){
 	var html =
 	'<div class = "MenuContainer">\n'+
 	'	<div id="MENU" style="display:none;">\n'+
-	'		<div class="Menu">\n'+ menuIdPrepend + '</div>\n'+
+	'		<div class="Menu">\n'+ 
+				menuIdPrepend + '\n'+
+	'		</div>\n'+
 	'	</div>\n'+
 	'</div>\n';
 	
@@ -49,7 +51,9 @@ function createMenuSelection(MenuPath, MenuName){
 	'	<div class="MenuSelectionImg" style="display: none;"></div>\n'+
 	'	<div class="SubMenuContainer">\n'+
 	'		<div class="MenuContainer">\n'+
-	'			<div class="Menu">\n' + menuIdPrepend + MenuPath + '</div>\n'+
+	'			<div class="Menu">\n'+ 
+					menuIdPrepend + MenuPath + '\n'+
+	'			</div>\n'+
 	'		</div>\n'+
 	'	</div>\n'+
 	'</div>\n';
