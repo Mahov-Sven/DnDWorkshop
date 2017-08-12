@@ -17,14 +17,19 @@ $(document).ready(function () {
 	// ------------- INITIALIZATION STUFF -------------
 
 	DICE.init("files/lib/physijs/physijs_worker.js", "CANVAS_OVERLAY", $("#CANVAS_OVERLAY").width(), $("#CANVAS_OVERLAY").height());
+	
 	LOADER.loadMenuFile("files/html/menu", function(html){
-		console.log(html);
+		document.getElementById("CONTENT").insertAdjacentHTML('afterbegin', html);
 	});
 
 	// ------------- END OF INITIALIZATION STUFF -------------
 
 	// ------------- MAIN JAVASCRIPT STUFF -------------
 
+	function createDiv(){
+		document.createElement('div');
+	}
+	
 	function updateTabs(newTab){
 
 		disableTab(currentTab);
@@ -102,6 +107,6 @@ $(document).ready(function () {
 	// ------------- END OF JQUERY STUFF -------------
 
 	// ------------- Temporary for testing -------------
-	$("#CONTENT").load("files/html/loginPrompt.dndhtml");
+	//$("#CONTENT").load("files/html/loginPrompt.dndhtml");
 	// ------------- End Temporary -------------
 });

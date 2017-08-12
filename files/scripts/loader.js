@@ -2,13 +2,14 @@ var htmlExt = ".dndhtml";
 var menuFileExt = ".dndmf";
 var srtRegex = /[\n\r\s\t]+/g;
 var menuIdPrepend = "Menu-Id-";
+var menuSubNameRegex = /Menu-Id-.*\n/g;
 
 function Loader(){}
 
 /* ------------ GENERAL FUNCTIONS ------------ */
 
-function createDiv(){
-	return document.createElement("div");
+function insertString(string, insertion, position){
+	return string.substr(0, position) + insertion + string.substr(position);
 }
 
 /* ------------ GENERAL FILE LOADING ------------ */
@@ -39,7 +40,6 @@ function createBaseMenu(){
 	'	</div>\n'+
 	'</div>\n';
 	
-	console.log(html);
 	return html;
 }
 
@@ -52,45 +52,57 @@ function createMenuSelection(MenuPath, MenuName){
 	'	<div class="SubMenuContainer">\n'+
 	'		<div class="MenuContainer">\n'+
 	'			<div class="Menu">\n'+ 
-					menuIdPrepend + MenuPath + '\n'+
+					MenuPath + (MenuPath.length > menuIdPrepend.length ? "." : "") + MenuName + '\n'+
 	'			</div>\n'+
 	'		</div>\n'+
 	'	</div>\n'+
 	'</div>\n';
 	
-	console.log(html);
-	
 	return html;
+}
+
+function checkForSubmenu(html, submenuArray){
+	var menuName = submenuArray.pop();
+	var lookup = menuIdPrepend + submenuArray.join(".");
+	var searchPosition = html.search(lookup + "\n");
+	if(html.search(lookup) === -1){
+		html = checkForSubmenu(html, submenuArray);
+		searchPosition = html.search(lookup + "\n");
+	}
+	
+	var menuString = createMenuSelection(lookup, menuName);
+	return insertString(html, menuString, searchPosition);
+}
+
+function removeSubmenuNames(html, submenuArray){
+	var menuName = submenuArray.pop();
+	var lookup = menuIdPrepend + submenuArray.join(".");
+	var searchPosition = html.search(lookup + "\n");
+	if(html.search(lookup) !== -1){
+		html = checkForSubmenu(html, submenuArray);
+		searchPosition = html.search(lookup + "\n");
+	}
+	
+	var menuString = createMenuSelection(lookup, menuName);
+	return insertString(html, menuString, searchPosition);
 }
 
 Loader.prototype.loadMenuFile = function(fileLocation, callback){
 	this.loadFile(fileLocation + menuFileExt, function(file){
 		var trimmed = file.replace(srtRegex, '');
 		var menuArray = trimmed.split(";").filter(function(token) {return token.length != 0});
-		var html = "";
-		
-		var base = createBaseMenu();
-		var subm = createMenuSelection("Main.Sub", "Test");
+		var html = createBaseMenu();
 		
 		for(var i = 0; i < menuArray.length; i++){
 			var submenuData = menuArray[i].split(":");
 			var submenuPathParts = submenuData[0].split(".");
-			var submenuDataSplitLocation = submenuData[0].lastIndexOf(".");
-			var submenuPath = submenuData[0].slice(0, submenuDataSplitLocation);
-			var submenuName = submenuData[0].slice(submenuDataSplitLocation + 1, submenuData[0].length);
-			var data = submenuData[1].substring(1, submenuData[1].length - 1).split(",");
 			
-			var currentPath = "";
-			for(var j = 0; j < submenuPathParts.length; j++){
-				var lookupPath = menuIdPrepend + currentPath + (currentPath.length > 0 ? "." : "") + submenuPathParts[j];
-				
-				
-				
-				currentPath += (j === 0 ? "" : ".") + submenuPathParts[j];
-			}
+			html = checkForSubmenu(html, submenuPathParts);
+			
 		}
+		html = html.replace(menuSubNameRegex, '');
 		
-		callback(menuArray);
+		callback(html);
 	});
 }
 
