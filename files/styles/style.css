@@ -84,12 +84,20 @@
 	overflow: hidden;
 }
 
-.openPage {
+.OpenPage {
+	position: relative;
 	background-color: #E6E6E6;
 	width: 60%;	/*Change when scrolling is implemented.*/
 	height: 60%; /*Change to fit content.*/
 	border-radius: 4em;
 	text-align: center;
+}
+
+.CenterContent {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 #MENU {

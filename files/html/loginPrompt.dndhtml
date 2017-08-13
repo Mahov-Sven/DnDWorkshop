@@ -1,12 +1,14 @@
-<div class="openPage"><!-- Container -->
-  <div><!-- Title -->
-    Log In
-  </div>
-  <form>
-    <input type="email" placeholder="Email Address" /><br />
-    <input type="password" placeholder="Password" /><br />
-  </form>
-  <div><!-- Login/create/forgot account -->
-    Submit
+<div class="OpenPage"><!-- Container -->
+  <div class="CenterContent">
+    <div><!-- Title -->
+      Log In
+    </div>
+    <form>
+      <input type="email" name="email" placeholder="Email Address" /><br />
+      <input type="password" name="password" placeholder="Password" /><br />
+    </form>
+    <div><!-- Login/create/forgot account -->
+      Submit
+    </div>
   </div>
 </div>
