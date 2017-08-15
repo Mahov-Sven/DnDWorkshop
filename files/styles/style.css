@@ -108,13 +108,15 @@
 	position: absolute;
 	width: 0;
 	height: 0;
+	top: 0;
+	left: 0;
 }
 
 .Menu {
-	border-right: 1pt solid #000000;
 	border-bottom: 1pt solid #000000;
 	background-color: #333333;
 	display: table;
+	border-collapse: separate;
 }
 
 .MenuSelection {
@@ -139,16 +141,6 @@
 	font-family: "Helvetica";
 	white-space: nowrap;
 	border-top: none;
-}
-
-.MenuSelectionImg {
-	display: table-cell;
-	background-image: url("../res/SubMenuArrow.png");
-	background-size: 100% 100%;
-    background-repeat: no-repeat;
-	min-height: 20pt;
-	min-width: 20pt;
-	padding-right: 1pt;
 }
 
 .SubMenuContainer {

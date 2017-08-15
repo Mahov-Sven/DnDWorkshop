@@ -12,6 +12,10 @@ function insertString(string, insertion, position){
 	return string.substr(0, position) + insertion + string.substr(position);
 }
 
+Loader.prototype.loadIntoPage = function(id, html){
+	document.getElementById(id).insertAdjacentHTML('afterbegin', html);
+}
+
 /* ------------ GENERAL FILE LOADING ------------ */
 
 Loader.prototype.loadFile = function(fileLocation, callback){
@@ -48,7 +52,6 @@ function createMenuSelection(MenuPath, MenuName){
 	var html =
 	'<div class="MenuSelection">\n'+
 	'	<div class="MenuSelectionText">' + MenuName + '</div>\n'+
-	'	<div class="MenuSelectionImg" style="display: none;"></div>\n'+
 	'	<div class="SubMenuContainer">\n'+
 	'		<div class="MenuContainer">\n'+
 	'			<div class="Menu">\n'+ 
