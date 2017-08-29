@@ -115,7 +115,8 @@ Loader.prototype.loadPlayerFile = function(fileLocation, requireExtension){
 	return null;
 }
 
-Loader.prototype.loadRuleSet = function(fileLocation, requireExtension){
+Loader.prototype.loadRulebook = function(fileLocation, requireExtension){
+	
 	return null;
 }
 
