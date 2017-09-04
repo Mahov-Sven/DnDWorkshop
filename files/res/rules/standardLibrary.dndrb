@@ -1,85 +1,56 @@
 /* IN THE JAVASCRIPT */
 // All Caps = JavaScript object type
 
-Property(){
-	type: STRING ? "Property";
-	value: VAR;
-	mutable: BOOLEAN ? false;
+Primitive(value){
+	this.value = this.set(value);
+	this.get = #Function((){
+		return: this.value;
+	});
+	this.set = #Function((value){
+		this.value = value;
+	});
 }
 
-Function(code){
-	type: STRING ? "Function";
-	value: FUNCTION ? (this.code);
-};
-
-String(value){
-	type: STRING ? "String";
-	value: STRING ? value;
+Boolean<Primitive>(bool){
+	this.set = #Function((bool){
+		if(bool == true || bool == false,{
+			this.value = value;
+		},{
+			// ELSE DO NOTHING
+		});
+	});
 }
 
-Decimal(value){
-	type: STRING ? "Decimal";
-	value : NUMBER ? value;
+String<Primitive>(str){}
+
+Integer<Primitive>(numb){
+	this.set = #Function((numb){
+		if(typeof(numb) == number,{
+			this.value = floor(value);
+		},{
+			// ELSE DO NOTHING
+		});
+	});
 }
 
-Integer(value){
-	type: STRING ? "Integer";
-	value: NUMBER ? INT(value);
+Decimal<Primitive>(numb){
+	this.set = #Function((numb){
+		if(typeof(numb) == number,{
+			this.value = value;
+		},{
+			// ELSE DO NOTHING
+		});
+	});
 }
 
-Boolean(value){
-	type: STRING ? "Property";
-	value: VAR;
-	mutable: BOOLEAN ? true;
+Property<Primitive>(){
+	this.value = null;
+	this.mutable = Boolean(false);
+	this.set = #Function((value){
+		if(this.mutable.get() == true,{
+			this.value = value;
+		},{
+			// ELSE DO NOTHING
+		});
+	});
 }
-
-/* --------------- */
-
-State(name){
-	name: STRING ? name;
-}
-
-AbilityScore(){
-	name: String;
-	abbreviation: Function ? (return: SUBSTR(this.name, 0, 2) );
-	score: Integer ? 10;
-	modifier: Function ? (return: INT(this.score - 10) / 2 );
-}
-
-/* COMPILED DNDRB VERSION *
-
-AbilityScore<Property>():{
-	type: STRING ? "AbilityScore";
-	value: VAR ? null;
-	path: STRING ? "AbilityScore_value";
-	
-	name: String ? String(null);
-	abbreviation: Function ? Function(return: this.name)
-	score: Integer ? Integer(10);
-	modifier: Function ? Function(return: INT(this.score - 10) / 2 );
-}
-
-/* ---------------- */
-
-/* COMPILED JSON VERSION *
-
-"AbilityScore":{
-	"type": "AbilityScore",
-	"value": "AbilityScore",
-	
-	"name":{
-		"type": "String",
-		"value": null
-		}
-	},
-	"abbreviation":{
-		"type": "Function",
-		"value": "AbilityScore_abbreviation_value"
-		}
-	},
-	"score": {
-		
-	}
-}
-
-/* ---------------- */

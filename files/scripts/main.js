@@ -22,6 +22,8 @@ $(document).ready(function () {
 		LOADER.loadIntoPage("CONTENT", html);
 		disableTab(2);
 	});
+	
+	LOADER.loadRulebook("files/res/rules/standardLibrary", function(html){});
 
 	// ------------- END OF INITIALIZATION STUFF -------------
 

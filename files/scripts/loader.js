@@ -1,5 +1,6 @@
 var htmlExt = ".dndhtml";
 var menuFileExt = ".dndmf";
+var rulebookFileExt = ".dndrb";
 var srtRegex = /[\n\r\s\t]+/g;
 var menuIdPrepend = "Menu-Id-";
 var menuSubNameRegex = /Menu-Id-.*\n/g;
@@ -115,9 +116,12 @@ Loader.prototype.loadPlayerFile = function(fileLocation, requireExtension){
 	return null;
 }
 
-Loader.prototype.loadRulebook = function(fileLocation, requireExtension){
-	
-	return null;
+/* ------------ RULEBOOK FILE LOADING ------------ */
+
+Loader.prototype.loadRulebook = function(fileLocation, callback){
+	this.loadFile(fileLocation + rulebookFileExt, function(file){
+		callback(RULEBOOK.parseRulebook(file));
+	})
 }
 
 Loader.prototype.loadSkillSet = function(fileLocation, requireExtension){
