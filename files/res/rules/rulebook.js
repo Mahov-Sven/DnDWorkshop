@@ -4,6 +4,24 @@ Rulebook.FUNCTIONS = {};
 
 Rulebook.VARIABLES = {};
 
+class Rulebook{
+	constuctor(){
+		// EMPTY
+		this.__functions;
+		this.__variables;
+	}
+	
+	bindElement(elem, valueName){
+		this.elem = elem;
+		this.valueName = valueName;
+		this.value = function(){return RULEBOOK.FUNCTIONS[this.valueName];};
+		elem.value  = this.value;
+		elem.addEventListener("change", this, false);
+	}
+	
+	
+}
+
 Rulebook.prototype.BIND_ELEMENT = function(elem, valueName){
 	this.elem = elem;
 	this.valueName = valueName;
@@ -48,7 +66,7 @@ Rulebook.prototype.parseRulebook = function(file){
 			indexLastBracket++;
 		}
 		
-		functions[functions.length] = result.substr(0, indexLastBracket);
+		functions.push(result.substr(0, indexLastBracket));
 		result = result.substr(indexLastBracket, result.length);
 	}
 	
@@ -107,18 +125,56 @@ Rulebook.prototype.parseRulebook = function(file){
 		
 		functionParts[3] = [];
 		
-		if(functionText.charAt(0) != '{' && functionText.charAt(functionText.length - 1) != '}'){
+		if(functionText.charAt(0) !== '{' && functionText.charAt(functionText.length - 1) != '}'){
 			throw Error("The inner part of the funciton did not close/open with braces properly");
 		}
 		
 		functionText = functionText.substr(1, functionText.length - 2);
 		
-		console.log(functionText);
+		var currentScope = 0;
+		
+		while(functionText !== ""){
+			var char = functionText.charAt(charIndex);
+			if(char === 0) throw Error("There was an error parsing an object's contents.");
+			if(char === '(' || char === '{'){
+				currentScope++;
+			}else if(char === ')' || char === '}'){
+				currentScope--;
+			}else if(char === ';' && currentScope === 0){
+				functionParts[3].push(functionText.substr(0, charIndex));
+				functionText = functionText.substr(charIndex + 1, functionText.length);
+				charIndex = 0;
+				continue;
+			}
+			charIndex++;
+		}
+		
+		for(var j = 0; j < functionParts[3].length; j++){
+			functionText = functionParts[3][j];
+			let functionInside = [];
+			if(functionText.substr(0, 5) !== "this.") throw Error("'this' was not used when declaring an object's property.");
+		
+			functionText = functionText.substr(5, functionText.length);
+			charIndex = 0;
+			while(true){
+				var char = functionText.charAt(charIndex);
+				if(char === '='){
+					break;
+				}
+				charIndex++;
+			}
+			functionInside[0] = functionText.substr(0, charIndex);
+			functionInside[1] = functionText.substr(charIndex + 1, functionText.length);
+			
+			functionParts[3][j] = functionInside;
+		}
+		
+		//console.log(functionText);
 		
 		console.log(functionParts);
 	}
 	
-	console.log(result);
+	//console.log(result);
 }
 
 Rulebook.prototype.ASSIGN = function(variable, assignment){
