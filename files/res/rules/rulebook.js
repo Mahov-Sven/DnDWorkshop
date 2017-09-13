@@ -2,13 +2,14 @@
 var deleteRegex = /(\/\*.*\*\/)|(\/\/.*)|[\n\r\s\t]/g;
 
 class Rulebook {
-	constructor(){
-		// EMPTY
-		this.__functions;
-		this.__variables;
-	}
 	
 	static parseRulebook(file){
+		
+		// Initialize Function
+		Rulebook.__functions["Function"] = Rulebook.Function = function(stringFunction){
+			
+		};
+		
 		let result = file.replace(deleteRegex, '');
 		let functions = [];
 		while(result.length !== 0){
@@ -132,7 +133,31 @@ class Rulebook {
 			}
 			
 			for(let j = 0; j < functionParts[3].length; j++){
+				const foundIndex = functionParts[3][j][1].indexOf("(")
+				let varName = functionParts[3][j][1].substring(0, foundIndex === -1 ? functionParts[3][j][1].length : foundIndex);
+				const fromThis = varName.substring(0, varName.indexOf(".")) === "this";
+				const isString = functionParts[3][j][1].length === varName.length && !fromThis;
+				varName = varName.substring(varName.indexOf(".") + 1);
 				
+				switch(varName){
+				case "null":
+					
+					break;
+				case "Function":
+					const functionName = functionParts[0] + "." + functionParts[3][j][0];
+					const functionString = functionParts[3][j][1].substring(foundIndex + 1, functionParts[3][j][1].lastIndexOf(")"));
+					const functionParams = functionString.substring(functionString.indexOf("("), functionString.indexOf(")"));
+					const functionContent = 
+					Rulebook.__functions[functionName] = functionContent;
+					break;
+				default:
+					if(isString){
+						
+					}else if(fromThis){
+						
+					}
+					break;
+				}
 			}
 			
 			//console.log(functionText);
@@ -140,9 +165,13 @@ class Rulebook {
 			console.log(functionParts);
 		}
 		
-		//console.log(result);
+		console.log(Rulebook.__functions);
+		console.log(Rulebook.__variables);
 	}
 }
+
+Rulebook.__functions = [];
+Rulebook.__variables = [];
 
 Rulebook.prototype.BIND_ELEMENT = function(elem, valueName){
 	this.elem = elem;

@@ -3,16 +3,16 @@
 
 Primitive(value){
 	this.value = this.set(value);
-	this.get = #Function((){
+	this.get = Function((){
 		return: this.value;
 	});
-	this.set = #Function((value){
+	this.set = Function((value){
 		this.value = value;
 	});
 }
 
 Boolean<Primitive>(bool){
-	this.set = #Function((bool){
+	this.set = Function((bool){
 		if(bool == true || bool == false,{
 			this.value = value;
 		},{
@@ -24,7 +24,7 @@ Boolean<Primitive>(bool){
 String<Primitive>(str){}
 
 Integer<Primitive>(numb){
-	this.set = #Function((numb){
+	this.set = Function((numb){
 		if(typeof(numb) == number,{
 			this.value = floor(value);
 		},{
@@ -34,7 +34,7 @@ Integer<Primitive>(numb){
 }
 
 Decimal<Primitive>(numb){
-	this.set = #Function((numb){
+	this.set = Function((numb){
 		if(typeof(numb) == number,{
 			this.value = value;
 		},{
@@ -46,7 +46,7 @@ Decimal<Primitive>(numb){
 Property<Primitive>(){
 	this.value = null;
 	this.mutable = Boolean(false);
-	this.set = #Function((value){
+	this.set = Function((value){
 		if(this.mutable.get() == true,{
 			this.value = value;
 		},{

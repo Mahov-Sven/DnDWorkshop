@@ -12,9 +12,6 @@ function insertString(string, insertion, position){
 }
 
 class Loader{
-	constructor(){
-		// DO NOTHING
-	}
 	
 	static loadIntoPage(id, html){
 		document.getElementById(id).insertAdjacentHTML('afterbegin', html);
