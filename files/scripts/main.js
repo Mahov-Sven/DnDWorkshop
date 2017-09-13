@@ -18,12 +18,12 @@ $(document).ready(function () {
 
 	DICE.init("files/lib/physijs/physijs_worker.js", "CANVAS_OVERLAY", $("#CANVAS_OVERLAY").width(), $("#CANVAS_OVERLAY").height());
 
-	LOADER.loadMenuFile("files/html/menu", function(html){
-		LOADER.loadIntoPage("CONTENT", html);
+	Loader.loadMenuFile("files/html/menu", function(html){
+		Loader.loadIntoPage("CONTENT", html);
 		disableTab(2);
 	});
 	
-	LOADER.loadRulebook("files/res/rules/standardLibrary", function(html){});
+	Loader.loadRulebook("files/res/rules/standardLibrary", function(html){});
 
 	// ------------- END OF INITIALIZATION STUFF -------------
 
@@ -109,8 +109,8 @@ $(document).ready(function () {
 	// ------------- END OF JQUERY STUFF -------------
 
 	// ------------- Temporary for testing -------------
-	LOADER.loadHTML("files/html/loginPrompt", function(html){
-		LOADER.loadIntoPage("CONTENT", html);
+	Loader.loadHTML("files/html/loginPrompt", function(html){
+		Loader.loadIntoPage("CONTENT", html);
 	});
 	// ------------- End Temporary -------------
 });
