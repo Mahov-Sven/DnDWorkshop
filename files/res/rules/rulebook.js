@@ -1,14 +1,23 @@
 /* PARSING */
 var deleteRegex = /(\/\*.*\*\/)|(\/\/.*)|[\n\r\s\t]/g;
 
+class PostEvaluateFunction {
+	constructor(functionName, functionArgs){
+		this.functionName = functionName;
+		this.functionArgs = functionArgs;
+	}
+}
+
+class PostEvaluateObject {
+	constructor(objectName, objectArgs){
+		this.objectName = objectName;
+		this.objectArgs = objectArgs;
+	}
+}
+
 class Rulebook {
 	
 	static parseRulebook(file){
-		
-		// Initialize Function
-		Rulebook.__functions["Function"] = Rulebook.Function = function(stringFunction){
-			
-		};
 		
 		let result = file.replace(deleteRegex, '');
 		let functions = [];
@@ -133,28 +142,38 @@ class Rulebook {
 			}
 			
 			for(let j = 0; j < functionParts[3].length; j++){
-				const foundIndex = functionParts[3][j][1].indexOf("(")
-				let varName = functionParts[3][j][1].substring(0, foundIndex === -1 ? functionParts[3][j][1].length : foundIndex);
+				const functionPartContent = functionParts[3][j][1];
+				const foundIndex = functionPartContent.indexOf("(")
+				let varName = functionPartContent.substring(0, foundIndex === -1 ? functionPartContent.length : foundIndex);
 				const fromThis = varName.substring(0, varName.indexOf(".")) === "this";
-				const isString = functionParts[3][j][1].length === varName.length && !fromThis;
+				const isString = functionPartContent.charAt(0) === '"' && functionPartContent.charAt(functionPartContent.length - 2) === '"';
+				const isArray = functionPartContent.charAt(0) === '[' && functionPartContent.charAt(functionPartContent.length - 2) === ']';
 				varName = varName.substring(varName.indexOf(".") + 1);
-				
+				const functionName = functionParts[0] + "." + functionParts[3][j][0];
+				const functionString = functionPartContent.substring(foundIndex + 1, functionPartContent.lastIndexOf(")"));
+				const functionStringArray = functionString.split(",");
+				console.log(functionString);
 				switch(varName){
 				case "null":
-					
+					Rulebook.__variables[functionName] = null;
 					break;
 				case "Function":
-					const functionName = functionParts[0] + "." + functionParts[3][j][0];
-					const functionString = functionParts[3][j][1].substring(foundIndex + 1, functionParts[3][j][1].lastIndexOf(")"));
-					const functionParams = functionString.substring(functionString.indexOf("("), functionString.indexOf(")"));
-					const functionContent = 
-					Rulebook.__functions[functionName] = functionContent;
+					const functionParams = functionString.substring(functionString.indexOf("(") + 1, functionString.indexOf(")"));
+					const functionContent = functionString.substring(functionString.indexOf("{") + 1, functionString.lastIndexOf("}"));
+					/* [The function Name (what 'this' refers to), The function's parameters as an array, the function's content as a string] */
+					const functionArray = [functionParts[0], functionParams.split(","), functionContent];
+					
+					Rulebook.__functions[functionName] = functionArray;
 					break;
 				default:
 					if(isString){
-						
+						Rulebook.__variables[functionName] = varName;
+					}if(isArray){
+						// TODO
 					}else if(fromThis){
-						
+						Rulebook.__variables[functionName] = new PostEvaluateFunction(varName, functionStringArray);
+					}else{
+						Rulebook.__variables[functionName] = new PostEvaluateObject(varName, functionStringArray);
 					}
 					break;
 				}
