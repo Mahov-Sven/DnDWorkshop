@@ -13,7 +13,7 @@ Primitive(value){
 
 Boolean<Primitive>(bool){
 	this.set = Function((bool){
-		if(bool == true || bool == false,{
+		if(typeof(bool) == boolean,{
 			this.value = value;
 		},{
 			// ELSE DO NOTHING
@@ -21,7 +21,15 @@ Boolean<Primitive>(bool){
 	});
 }
 
-String<Primitive>(str){}
+String<Primitive>(str){
+	this.set = Function((str){
+		if(typeof(str) == string,{
+			this.value = value;
+		},{
+			// ELSE DO NOTHING
+		});
+	});
+}
 
 Integer<Primitive>(numb){
 	this.set = Function((numb){
@@ -43,9 +51,9 @@ Decimal<Primitive>(numb){
 	});
 }
 
-Property<Primitive>(){
-	this.value = null;
-	this.mutable = Boolean(false);
+Property<Primitive>(value){
+	this.value = this.set(value);
+	this.mutable = Boolean(true);
 	this.set = Function((value){
 		if(this.mutable.get() == true,{
 			this.value = value;
@@ -54,3 +62,24 @@ Property<Primitive>(){
 		});
 	});
 }
+
+Dice(sides){
+	this.sides = Integer(sides);
+	this.roll = Function((){
+		return: randomInt(1, this.sides.get());
+	});
+}
+
+// Examples
+/*
+AbilityScore<NamedProperty>(name, value){
+	this.name = String(name);
+	this.abreviation = Function((){
+		return: substring(this.name.get(), 0, 3);
+	});
+	this.value = Integer(value);
+	this.modifier = Function((){
+		return: floor((this.value.get() - 10) / 2);
+	});
+}
+*/
