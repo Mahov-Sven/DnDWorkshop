@@ -1,10 +1,14 @@
+import Standard.Util.Types.Primitive;
+
 class Boolean extends Primitive {
 	
 	construct(value){
 		super.construct(value);
 	}
 	
-	// Override
+	/**
+	 * @Override
+	 */
 	public set(bool){
 		if(Standard.isBoolean(bool)){
 			this.value = bool;

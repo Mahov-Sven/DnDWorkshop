@@ -1,0 +1,6 @@
+Classes: [
+	Standard/Util/Types: [
+		Primitive,
+		Boolean,
+	]
+]
