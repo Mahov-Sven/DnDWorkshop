@@ -1,0 +1,15 @@
+class Primitive {
+	private value;
+	
+	construct(value){
+		set(value);
+	}
+	
+	public get(){
+		return this.value;
+	}
+	
+	public set(value){
+		this.value = value;
+	}
+}

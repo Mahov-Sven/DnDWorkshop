@@ -1,0 +1,15 @@
+class Boolean extends Primitive {
+	
+	construct(value){
+		super.construct(value);
+	}
+	
+	// Override
+	public set(bool){
+		if(Standard.isBoolean(bool)){
+			this.value = bool;
+		}else{
+			throw IllegalArgumentException("The argument given: ${bool} was not of the boolean type.");
+		}
+	}
+}

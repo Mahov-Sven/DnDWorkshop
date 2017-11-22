@@ -1,0 +1,12 @@
+Objects{
+	Primitive;
+	Boolean;
+}
+
+Imports{
+	// None
+}
+
+Globals{
+	// None
+}
