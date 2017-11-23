@@ -1,6 +1,10 @@
 /* PARSING */
-const deleteRegex = /(\/\*[^*](.|\n)*?\*\/)|(\/\/.*)|[\n\r\s\t]/g;
-const wordSeparators = [' ', '.', '{', '}','[', ']', '\'', ';', '(', ')', ':', ',', '\n', '\t'];
+//const deleteRegex = /(\/\*[^*](.|\n)*?\*\/)|(\/\/.*)|[\n\r\s\t]/g;
+const deleteRegex = /(\/\*(.|\n)*?\*\/)|(\/\/.*)|[\n\r\s\t]/g;
+const wordSeparators = [' ', '.', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
+const sentenceSeparators = [' ', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
+const contextStartSeparators = [' ', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
+const contextEndSeparators = [' ', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
 
 class Rulebook {
 	
@@ -13,88 +17,163 @@ class Rulebook {
 }
 
 class Parser {
-	constructor(string, wordSeparatorChars, contextStartChars, contextEndChars){
-		this.text = string;
-		this.wordSeparatorChars = new Set(wordSeparatorChars);
-		this.contextStartChars = new Set(contextStartChars);
-		this.contextEndChars = new Set(contextEndChars);
-		this.charPointer = 0;
-		this.currentWord = undefined;
-		this.currentContext = undefined;
+	constructor(string, wordSeparatorChars, sentenceSeparatorChars, contextStartChars, contextEndChars){
+		this._text = string;
+		this._wordSeparatorChars = new Set(wordSeparatorChars);
+		this._sentenceSeparatorChars = new Set(sentenceSeparatorChars);
+		this._contextStartChars = new Set(contextStartChars);
+		this._contextEndChars = new Set(contextEndChars);
+		this._charPointer = 0;
+		this._currentWord = undefined;
+		this._currentSentence = undefined;
+		this._currentContext = undefined;
 		
 		this._updateWord();
-		//this._updateContext();
 	}
 	
 	char(){
-		return this.text.charAt(this.charPointer);
+		return this._text.charAt(this._charPointer);
 	}
 	
 	_previous(){
-		if(this.charPointer - 1 <= 0) return undefined;
-		this.charPointer--;
+		if(this._charPointer - 1 <= 0) return undefined;
+		this._charPointer--;
 		return this.char();
 	}
 	
 	previous(){
 		this._previous();
-		if(this.currentWord === undefined || this.wordSeparatorChars.has(this.char())) this._updateWord();
+		if(this._currentWord === undefined || this._wordSeparatorChars.has(this.char())) this._updateWord();
 		return this.char();
 	}
 	
 	_next(){
-		if(this.charPointer + 1 >= this.text.length) return undefined;
-		this.charPointer++;
+		if(this._charPointer + 1 >= this._text.length) return undefined;
+		this._charPointer++;
 		return this.char();
 	}
 	
 	next(){
 		this._next();
-		if(this.currentWord === undefined || this.wordSeparatorChars.has(this.char())) this._updateWord();
+		if(this._currentWord === undefined || this._wordSeparatorChars.has(this.char())) this._updateWord();
 		return this.char();
 	}
 	
-	_updateWord(){
-		if(this.wordSeparatorChars.has(this.char())) this.currentWord === undefined;
-		const word = [];
+	_parsePart(startChars, endChars){
+		const part = [];
 		
-		let charPointer = this.charPointer;
-		let char = this.text.charAt(charPointer);
-		while(charPointer >= 0 && !this.wordSeparatorChars.has(char)){
+		let charPointer = this._charPointer;
+		let char = this._text.charAt(charPointer);
+		while(charPointer >= 0 && !startChars.has(char)){
 			charPointer--;
-			char = this.text.charAt(charPointer);
+			char = this._text.charAt(charPointer);
 		}
-		if(charPointer === -1) this.currentWord = undefined;
 		
 		charPointer++;
-		char = this.text.charAt(charPointer);
-		while(charPointer < this.text.length && !this.wordSeparatorChars.has(char)){
-			word.push(char);
+		char = this._text.charAt(charPointer);
+		while(charPointer < this._text.length && !endChars.has(char)){
+			part.push(char);
 			charPointer++;
-			char = this.text.charAt(charPointer);
+			char = this._text.charAt(charPointer);
 		}
 		
-		this.currentWord = word.join('');
+		return part.join('');
+	}
+	
+	_previousPart(startChars, endChars){
+		let previous = this._previous();
+		while(previous !== undefined && !startChars.has(previous)){
+			previous = this._previous();
+		}
+		
+		while(previous !== undefined && startChars.has(previous)){
+			previous = this._previous();
+		}
+		
+		while(previous !== undefined && !endChars.has(previous)){
+			previous = this._previous();
+		}
+		
+		this._next();
+	}
+	
+	_nextPart(startChars, endChars){
+		let next = this._next();
+		while(next !== undefined && !endChars.has(next)){
+			next = this._next();
+		}
+		
+		while(next !== undefined && endChars.has(next)){
+			next = this._next();
+		}
+		
+		while(next !== undefined && startChars.has(next)){
+			next = this._next();
+		}
+	}
+	
+	_updateWord(){	
+		this._currentWord = this._parsePart(this._wordSeparatorChars, this._wordSeparatorChars);
+		if(this._wordSeparatorChars.has(this.char())) this._currentWord = undefined;
+		this._updateSentence();
 	}
 	
 	word(){
-		return this.currentWord;
+		return this._currentWord;
 	}
 	
-	nextWord(){
-		let next = this._next();
-		while(next !== undefined && !this.wordSeparatorChars.has(next)){
-			next = this._next();
-		}
-		
-		while(next !== undefined && this.wordSeparatorChars.has(next)){
-			next = this._next();
-		}
+	previousWord(){
+		this._previousPart(this._wordSeparatorChars, this._wordSeparatorChars);
 		this._updateWord();
 		return this.word();
 	}
 	
+	nextWord(){
+		this._nextPart(this._wordSeparatorChars, this._wordSeparatorChars);
+		this._updateWord();
+		return this.word();
+	}
+	
+	_updateSentence(){
+		this._currentSentence = this._parsePart(this._sentenceSeparatorChars, this._sentenceSeparatorChars);
+		if(this._sentenceSeparatorChars.has(this.char())) this._currentSentence = undefined;
+		this._updateContext();
+	}
+	
+	sentence(){
+		return this._currentSentence;
+	}
+	
+	previousSentence(){
+		this._previousPart(this._sentenceSeparatorChars, this._sentenceSeparatorChars);
+		this._updateSentence();
+		return this.sentence();
+	}
+	
+	nextSentence(){
+		this._nextPart(this._sentenceSeparatorChars, this._sentenceSeparatorChars);
+		this._updateSentence();
+		return this.sentence();
+	}
+	
+	_updateContext(){
+		this._currentContext = this._parsePart(this._contextStartChars, this._contextEndChars);
+		if(this._contextStartChars.has(this.char()) || this._contextEndChars.has(this.char())) this._currentContext = undefined;
+	}
+	
+	context(){
+		return this._currentContext;
+	}
+	
+	previousContext(){
+		this._previousPart(this._contextStartChars, this._contextEndChars);
+		this._updateContext();
+		return this.context();
+	}
+	
 	nextContext(){
-		
+		this._nextPart(this._contextStartChars, this._contextEndChars);
+		this._updateContext();
+		return this.context();
 	}
 }
