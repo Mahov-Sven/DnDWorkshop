@@ -1,6 +1,7 @@
 Classes: [
 	Standard/Util/Types: [
 		Primitive,
-		Boolean,
+		Boolean
 	]
-]
+];
+

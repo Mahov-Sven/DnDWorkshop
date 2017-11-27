@@ -1,18 +1,49 @@
 /* PARSING */
-//const deleteRegex = /(\/\*[^*](.|\n)*?\*\/)|(\/\/.*)|[\n\r\s\t]/g;
-const deleteRegex = /(\/\*(.|\n)*?\*\/)|(\/\/.*)|[\n\r\s\t]/g;
+//const deleteRegex = /(\/\*[^*](.|\n)*?\*\/)|(\/\/.*)/g;
+
+// For class parsing
+const deleteRegex = /(\/\*(.|\n)*?\*\/)|(\/\/.*)/g;
 const wordSeparators = [' ', '.', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
 const sentenceSeparators = [' ', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
-const contextStartSeparators = [' ', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
-const contextEndSeparators = [' ', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
+const contextStartSeparators = ['{', '[', '('];
+const contextEndSeparators = ['}', ']', ')'];
 
 class Rulebook {
 	
 	static parseRulebook(file){
 		
-		let text = file.replace(deleteRegex, '');
+		const rulebook = {
+				classes: [],
+		}
 		
+		let text = file.replace(/(\/\*(.|\n)*?\*\/)|(\/\/.*)/g, '');
 		
+		const rulebookParser = new Parser(
+				text,
+				[':', '[', ']', ',', '/'],
+				[':', '[', ']', ','],
+				['['],
+				[']']
+		);
+		
+		while(true){
+			const field = rulebookParser.word();
+			
+			switch(field){
+			case "Classes":
+				rulebookParser.nextContext();
+				break;
+			default:
+				throw new IllegalParseArgumentException(
+						'An unexpected keyword: \'' + field + '\' was found.\n' + 
+						'Expecting keyword \'Classes\' instead.'
+						);
+			}
+			
+			break;
+		}
+		
+		console.log(rulebookParser);
 	}
 }
 
@@ -23,12 +54,27 @@ class Parser {
 		this._sentenceSeparatorChars = new Set(sentenceSeparatorChars);
 		this._contextStartChars = new Set(contextStartChars);
 		this._contextEndChars = new Set(contextEndChars);
+		this._lineSeparators = new Set(['\n']);
 		this._charPointer = 0;
 		this._currentWord = undefined;
 		this._currentSentence = undefined;
 		this._currentContext = undefined;
+		this._currentLine = undefined;
 		
 		this._updateWord();
+		this._updateLine();
+	}
+	
+	setText(text){
+		this._text = text;
+		this._charPointer = 0;
+		this._currentWord = undefined;
+		this._currentSentence = undefined;
+		this._currentContext = undefined;
+		this._currentLine = undefined;
+		
+		this._updateWord();
+		this._updateLine();
 	}
 	
 	char(){
@@ -38,6 +84,7 @@ class Parser {
 	_previous(){
 		if(this._charPointer - 1 <= 0) return undefined;
 		this._charPointer--;
+		if(this._lineSeparators.has(this.char())) this._updateLine();
 		return this.char();
 	}
 	
@@ -50,6 +97,7 @@ class Parser {
 	_next(){
 		if(this._charPointer + 1 >= this._text.length) return undefined;
 		this._charPointer++;
+		if(this._lineSeparators.has(this.char())) this._updateLine();
 		return this.char();
 	}
 	
@@ -156,8 +204,31 @@ class Parser {
 		return this.sentence();
 	}
 	
+	_parseContext(startChars, endChars){
+		const part = [];
+		
+		let charPointer = this._charPointer;
+		let char = this._text.charAt(charPointer);
+		while(charPointer >= 0 && !startChars.has(char)){
+			charPointer--;
+			char = this._text.charAt(charPointer);
+		}
+		
+		let context = 0;
+		charPointer++;
+		char = this._text.charAt(charPointer);
+		while(charPointer < this._text.length && (!endChars.has(char) || context !== 0)){
+			part.push(char);
+			charPointer++;
+			char = this._text.charAt(charPointer);
+			if(startChars.has(char)) context++;
+		}
+		
+		return part.join('');
+	}
+	
 	_updateContext(){
-		this._currentContext = this._parsePart(this._contextStartChars, this._contextEndChars);
+		this._currentContext = this._parseContext(this._contextStartChars, this._contextEndChars);
 		if(this._contextStartChars.has(this.char()) || this._contextEndChars.has(this.char())) this._currentContext = undefined;
 	}
 	
@@ -175,5 +246,26 @@ class Parser {
 		this._nextPart(this._contextStartChars, this._contextEndChars);
 		this._updateContext();
 		return this.context();
+	}
+	
+	_updateLine(){
+		this._currentLine = this._parsePart(this._lineSeparators, this._lineSeparators);
+		if(this._lineSeparators.has(this.char()) || this._lineSeparators.has(this.char())) this._currentLine = undefined;
+	}
+	
+	line(){
+		return this._currentLine;
+	}
+	
+	previousLine(){
+		this._previousPart(this._lineSeparators, this._lineSeparators);
+		this._updateLine();
+		return this.line();
+	}
+	
+	nextLine(){
+		this._nextPart(this._lineSeparators, this._lineSeparators);
+		this._updateLine();
+		return this.line();
 	}
 }

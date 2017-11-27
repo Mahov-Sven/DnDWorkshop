@@ -23,7 +23,7 @@ $(document).ready(function () {
 		disableTab(2);
 	});
 	
-	Loader.loadRulebook("files/res/rules/standardLibrary", function(html){});
+	Loader.loadRulebook("files/res/rules/StandardLibrary/StandardLibrary", function(html){});
 
 	// ------------- END OF INITIALIZATION STUFF -------------
 

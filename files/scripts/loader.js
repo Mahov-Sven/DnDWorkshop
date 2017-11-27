@@ -1,6 +1,6 @@
 var htmlExt = ".dndhtml";
 var menuFileExt = ".dndmf";
-var rulebookFileExt = ".dndrb";
+var rulebookFileExt = ".rbk";
 var srtRegex = /[\n\r\s\t]+/g;
 var menuIdPrepend = "Menu-Id-";
 var menuSubNameRegex = /Menu-Id-.*\n/g;
