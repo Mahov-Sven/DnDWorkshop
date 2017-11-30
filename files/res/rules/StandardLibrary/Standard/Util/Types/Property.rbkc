@@ -1,0 +1,29 @@
+import Standard.Util.Types.Primitive;
+import Standard.Util.Types.Boolean;
+
+class Property {
+	
+	private Primitive value;
+	private Boolean mutable;
+	
+	construct(value, mutable = true){
+		this.value = value;
+		this.mutable = mutable;
+	}
+	
+	public get(){
+		return this.value;
+	}
+	
+	public set(value){
+		if(this.mutable){
+			this.value = value;
+		}else{
+			throw IllegalArgumentException("An attempt to set a non-mutable property has occured.");
+		}
+	}
+	
+	public Boolean mutable(){
+		return this.mutable;
+	}
+}

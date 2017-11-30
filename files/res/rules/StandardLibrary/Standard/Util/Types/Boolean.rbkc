@@ -2,14 +2,14 @@ import Standard.Util.Types.Primitive;
 
 class Boolean extends Primitive {
 	
-	construct(value){
+	public typeas boolean construct(value){
 		super.construct(value);
 	}
 	
 	/**
-	 * @Override
+	 * @Override Primitive
 	 */
-	public set(bool){
+	public operation = set(bool){
 		if(Standard.isBoolean(bool)){
 			this.value = bool;
 		}else{

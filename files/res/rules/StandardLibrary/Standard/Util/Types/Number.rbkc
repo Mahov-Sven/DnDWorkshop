@@ -1,0 +1,19 @@
+import Standard.Util.Types.Primitive;
+
+class Number extends Primitive {
+	
+	construct(numb){
+		super.construct(numb);
+	}
+	
+	/**
+	 * @Override Primitive
+	 */
+	public operation = set(numb){
+		if(Standard.isNumber(numb)){
+			this.value = numb;
+		}else{
+			throw IllegalArgumentException("The argument given: ${numb} was not a number.");
+		}
+	}
+}

@@ -1,0 +1,35 @@
+import Standard.Util.Types.Primitive;
+
+class String extends Primitive {
+	
+	private Integer length;
+	
+	#redefine type string
+	construct(value){
+		super.construct(value);
+		this.length = Standard.strlen(value);
+	}
+	
+	/**
+	 * @Override
+	 */
+	public set(str){
+		if(Standard.isString(str)){
+			this.value = str;
+		}else{
+			throw IllegalArgumentException("The argument given: ${str} was not of the string type.");
+		}
+	}
+	
+	public Integer length(){
+		return this.length;
+	}
+	
+	public static substring(start, end){
+		return new String(Standard.substring(this.value, start, end));
+	}
+	
+	public static charAt(index){
+		return new Char(Standard.charAt(this.value, index));
+	}
+}

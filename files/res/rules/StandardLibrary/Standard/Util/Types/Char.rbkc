@@ -1,0 +1,19 @@
+import Standard.Util.Types.Primitive;
+
+class Char extends Primitive {
+	
+	construct(value){
+		super.construct(value);
+	}
+	
+	/**
+	 * @Override Primitive
+	 */
+	public operation = set(chr){
+		if(Standard.isChar(chr)){
+			this.value = chr;
+		}else{
+			throw IllegalArgumentException("The argument given: ${chr} was not of the char type.");
+		}
+	}
+}

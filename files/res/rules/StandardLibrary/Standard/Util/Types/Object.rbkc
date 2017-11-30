@@ -1,0 +1,16 @@
+class Object {
+	
+	construct(){
+		
+	}
+	
+	#redefine operation == object . object
+	public equal(obj){
+		return ((Object) obj) == this;
+	}
+	
+	#redefine operation test object .
+	public boolVal(){
+		return this;
+	}
+}

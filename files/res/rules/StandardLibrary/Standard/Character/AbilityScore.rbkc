@@ -1,0 +1,17 @@
+import Standard.Util.Types.Integer;
+import Standard.Util.Types.String;
+
+class AbilityScore extends NamedProperty {
+	
+	private Number value;
+	private String abreviation;
+	
+	construct(name, value){
+		super(value, name, true);
+		this.abreviation = this.name.substring(0, 3);
+	}
+	
+	public Integer modifier(){
+		return (this.value - 10) / 2;
+	}
+}

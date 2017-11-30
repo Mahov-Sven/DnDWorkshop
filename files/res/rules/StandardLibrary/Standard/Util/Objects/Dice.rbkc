@@ -1,0 +1,6 @@
+class Dice {
+	
+	public static roll(sides){
+		return Standard.randomInt(1, sides);
+	}
+}

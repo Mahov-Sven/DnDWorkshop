@@ -1,0 +1,36 @@
+class Unit {
+	
+	private String nameSingular;
+	private String namePlural;
+	private String abbreviation;
+	
+	construct(String nameSing, String namePlur, String abbreviationSing, String abbreviationPlur){
+		this.nameSingular = nameSing;
+		this.namePlural = namePlur;
+		this.abbreviation = abbreviation;
+	}
+	
+	public String name(){
+		return this.nameSingular;
+	}
+	
+	public String namePlural(){
+		return this.namePlural;
+	}
+	
+	public String abbr(){
+		return this.abbreviation;
+	}
+	
+	public static Unit FEET = new Unit("foot", "feet", "ft.");
+	public static Unit METER = new Unit("meter", "meters", "m");
+	
+	public static convertLength(Unit input, Unit output, Number value){
+		switch(input.namePlural()){
+		
+		}
+	}
+	
+	public static Unit POUND = new Unit("pound", "pounds", "lb.");
+	public static Unit KILO_GRAM = new Unit("kilogram", "kilograms", "kg");
+}

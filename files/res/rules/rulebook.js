@@ -20,10 +20,10 @@ class Rulebook {
 		
 		const rulebookParser = new Parser(
 				text,
-				[':', '[', ']', ',', '/'],
-				[':', '[', ']', ','],
-				['['],
-				[']']
+				[':', '[', ']', ',', '/', '\n', '\t', ' '],
+				[':', '[', ']', ',', '\n', '\t', ' '],
+				['[', ';'],
+				[']', ';']
 		);
 		
 		while(true){
@@ -32,6 +32,7 @@ class Rulebook {
 			switch(field){
 			case "Classes":
 				rulebookParser.nextContext();
+				
 				break;
 			default:
 				throw new IllegalParseArgumentException(
@@ -218,13 +219,42 @@ class Parser {
 		charPointer++;
 		char = this._text.charAt(charPointer);
 		while(charPointer < this._text.length && (!endChars.has(char) || context !== 0)){
+			if(startChars.has(char)) context++;
+			if(endChars.has(char)) context--;
 			part.push(char);
 			charPointer++;
 			char = this._text.charAt(charPointer);
-			if(startChars.has(char)) context++;
 		}
 		
 		return part.join('');
+	}
+	
+	_previousContext(startChars, endChars){
+		let previous = this._previous();
+		while(previous !== undefined && !startChars.has(previous) && !endChars.has(previous)){
+			previous = this._previous();
+		}
+		
+		while(previous !== undefined && (startChars.has(previous) || endChars.has(previous))){
+			previous = this._previous();
+		}
+		
+		this.previous();
+		if(this.word() === undefined) this.previousWord();
+	}
+	
+	_nextContext(startChars, endChars){
+		let next = this._next();
+		while(next !== undefined && !startChars.has(next) && !endChars.has(next)){
+			next = this._next();
+		}
+		
+		while(next !== undefined && (startChars.has(next) || endChars.has(next))){
+			next = this._next();
+		}
+		
+		this.next();
+		if(this.word() === undefined) this.nextWord();
 	}
 	
 	_updateContext(){
@@ -237,20 +267,19 @@ class Parser {
 	}
 	
 	previousContext(){
-		this._previousPart(this._contextStartChars, this._contextEndChars);
+		this._previousContext(this._contextStartChars, this._contextEndChars);
 		this._updateContext();
 		return this.context();
 	}
 	
 	nextContext(){
-		this._nextPart(this._contextStartChars, this._contextEndChars);
+		this._nextContext(this._contextStartChars, this._contextEndChars);
 		this._updateContext();
 		return this.context();
 	}
 	
 	_updateLine(){
 		this._currentLine = this._parsePart(this._lineSeparators, this._lineSeparators);
-		if(this._lineSeparators.has(this.char()) || this._lineSeparators.has(this.char())) this._currentLine = undefined;
 	}
 	
 	line(){

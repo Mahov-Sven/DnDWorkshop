@@ -1,0 +1,12 @@
+class Item {
+	
+	private String name;
+	private Integer cost;
+	private Weight //TODO
+	
+	construct(){
+		
+	}
+	
+	
+}

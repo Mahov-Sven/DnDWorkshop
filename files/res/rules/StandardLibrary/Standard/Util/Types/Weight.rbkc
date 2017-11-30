@@ -1,0 +1,9 @@
+class Weight {
+	
+	private Integer weight;
+	private Unit units;
+	
+	construct(Integer weight, Unit units = Unit.POUND){
+		
+	}
+}

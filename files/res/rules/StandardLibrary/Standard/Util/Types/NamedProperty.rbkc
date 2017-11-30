@@ -1,0 +1,16 @@
+import Standard.Util.Types.Primitive;
+import Standard.Util.Types.String;
+
+class NamedProperty extends Property {
+	
+	private String name;
+	 
+	construct(value, name, mutable = true){
+		super(value, mutable);
+		this.name = new String(name);
+	}
+	
+	public String name(){
+		return this.name;
+	}
+}

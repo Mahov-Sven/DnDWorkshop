@@ -2,14 +2,22 @@ class Primitive {
 	private value;
 	
 	construct(value){
-		set(value);
+		this.set(value);
 	}
 	
-	public get(){
+	public operation noop get(){
 		return this.value;
 	}
 	
-	public set(value){
+	public operation = set(value){
 		this.value = value;
+	}
+	
+	public operation == equal(obj){
+		return ((Primitive) obj).value == this.value;
+	}
+	
+	public operation test boolValue(){
+		return this.value;
 	}
 }
