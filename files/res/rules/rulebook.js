@@ -26,25 +26,52 @@ class Rulebook {
 				[']', ';']
 		);
 		
+		let token = "";
+		const result = {};
 		while(true){
-			const field = rulebookParser.word();
-			
-			switch(field){
-			case "Classes":
+			console.log(rulebookParser.line());
+			switch(rulebookParser.expecting("Classes")){
+			case 0:
+				result.classes = [];
+				rulebookParser.afterWord();
+				rulebookParser.expecting(":[", ['\t', ' ', '\n']);
 				rulebookParser.nextContext();
 				
+				while(true){
+					token = rulebookParser.sentence();
+					rulebookParser.afterSentence();
+					switch(rulebookParser.match(":[", ['\t', ' ', '\n'])){
+					case 0:
+						const loc = [];
+						rulebookParser.nextContext();
+						let finished = rulebookParser.find("]|],", ['\t', ' ', '\n']);
+						
+						while(!finished){
+							loc.push(rulebookParser.word());
+							rulebookParser.afterWord();
+							finished = rulebookParser.find("]|],", ['\t', ' ', '\n']);
+							if(!finished) rulebookParser.expecting(",", ['\t', ' ', '\n']);
+							rulebookParser.nextWord();
+						}
+						
+						result.classes.push(loc);
+						break;
+					default:
+						result.classes.push(token);
+						break;
+					}
+					rulebookParser.nextContext();
+					console.log(rulebookParser.line());
+					break;
+				}
+				
 				break;
-			default:
-				throw new IllegalParseArgumentException(
-						'An unexpected keyword: \'' + field + '\' was found.\n' + 
-						'Expecting keyword \'Classes\' instead.'
-						);
 			}
 			
 			break;
 		}
 		
-		console.log(rulebookParser);
+		console.log(result);
 	}
 }
 
@@ -78,8 +105,55 @@ class Parser {
 		this._updateLine();
 	}
 	
-	char(){
-		return this._text.charAt(this._charPointer);
+	find(matchStr, exceptions = []){
+		const excp = new Set(exceptions);
+		const arr = matchStr.split('|');
+		for(let i = 0; i < arr.length; i++){
+			let found = true;
+			for(let c = 0; c < arr[i].length; c++){
+				const char = arr[i].charAt(c);
+				const sChar = this.char(c);
+				if(sChar !== char && !excp.has(sChar)){
+					found = false;
+					break;
+				}
+			}
+			if(found) return true;
+		}
+		return false;
+	}
+	
+	match(matchStr, exceptions = []){
+		const excp = new Set(exceptions);
+		const arr = matchStr.split('|');
+		for(let i = 0; i < arr.length; i++){
+			let found = true;
+			for(let c = 0; c < arr[i].length; c++){
+				const char = arr[i].charAt(c);
+				const sChar = this.char(c);
+				if(sChar !== char && !excp.has(sChar)){
+					found = false;
+					console.log(sChar, char, excp);
+					break;
+				}
+			}
+			if(found) return i;
+		}
+		return undefined;
+	}
+	
+	expecting(matchStr, exceptions = []){
+		const result = this.match(matchStr, exceptions);
+		if(result !== undefined) return result;
+		throw new IllegalParseArgumentException(`Error parsing text.\nExpecting one of '${arr.join(", ")}'`);
+	}
+	
+	charAtIndex(index){
+		return this._text.charAt(index);
+	}
+	
+	char(offset = 0){
+		return this._text.charAt(this._charPointer + offset);
 	}
 	
 	_previous(){
@@ -183,6 +257,13 @@ class Parser {
 		return this.word();
 	}
 	
+	afterWord(){
+		let next = this._next();
+		while(next !== undefined && !this._wordSeparatorChars.has(next)){
+			next = this._next();
+		}
+	}
+	
 	_updateSentence(){
 		this._currentSentence = this._parsePart(this._sentenceSeparatorChars, this._sentenceSeparatorChars);
 		if(this._sentenceSeparatorChars.has(this.char())) this._currentSentence = undefined;
@@ -203,6 +284,13 @@ class Parser {
 		this._nextPart(this._sentenceSeparatorChars, this._sentenceSeparatorChars);
 		this._updateSentence();
 		return this.sentence();
+	}
+	
+	afterSentence(){
+		let next = this._next();
+		while(next !== undefined && !this._sentenceSeparatorChars.has(next)){
+			next = this._next();
+		}
 	}
 	
 	_parseContext(startChars, endChars){

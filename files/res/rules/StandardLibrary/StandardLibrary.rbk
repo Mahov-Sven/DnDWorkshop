@@ -1,6 +1,10 @@
-Classes {
-	Standard/Util/Types: {
+Classes: [
+	Standard/Util/Types: [
 		Primitive,
 		Boolean
-	}
-};
+	],
+	Another: [
+		
+	],
+	Test,
+];
