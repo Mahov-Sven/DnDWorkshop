@@ -7,6 +7,7 @@ const wordSeparators = [' ', '.', '{', '}','[', ']', '\'', ':', ';', '"', '\'', 
 const sentenceSeparators = [' ', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '(', ')', ',', '\n', '\t'];
 const contextStartSeparators = ['{', '[', '('];
 const contextEndSeparators = ['}', ']', ')'];
+const tsnExceptions = ['\t', ' ', '\n'];
 
 class Rulebook {
 	
@@ -17,61 +18,66 @@ class Rulebook {
 		}
 		
 		let text = file.replace(/(\/\*(.|\n)*?\*\/)|(\/\/.*)/g, '');
+		text = file.replace(/\r\n/g, '\n');
 		
-		const rulebookParser = new Parser(
+		const parser = new Parser(
 				text,
 				[':', '[', ']', ',', '/', '\n', '\t', ' '],
 				[':', '[', ']', ',', '\n', '\t', ' '],
-				['[', ';'],
+				['['],
 				[']', ';']
 		);
 		
 		let token = "";
 		const result = {};
 		while(true){
-			console.log(rulebookParser.line());
-			switch(rulebookParser.expecting("Classes")){
+			switch(parser.expecting("Classes")){
 			case 0:
 				result.classes = [];
-				rulebookParser.afterWord();
-				rulebookParser.expecting(":[", ['\t', ' ', '\n']);
-				rulebookParser.nextContext();
-				
+				parser.afterWord();
+				parser.expecting(":[", tsnExceptions);
+				parser.nextContext();
+				parser.next();
 				while(true){
-					token = rulebookParser.sentence();
-					rulebookParser.afterSentence();
-					switch(rulebookParser.match(":[", ['\t', ' ', '\n'])){
-					case 0:
-						const loc = [];
-						rulebookParser.nextContext();
-						let finished = rulebookParser.find("]|],", ['\t', ' ', '\n']);
-						
+					if(parser.find("]", tsnExceptions)) break;
+					parser.nextWord();
+					token = parser.sentence();
+					parser.afterSentence();
+					if(parser.find(":[", tsnExceptions)){
+						parser.nextContext();
+						parser.next();
+						let finished = parser.find("]", tsnExceptions);
 						while(!finished){
-							loc.push(rulebookParser.word());
-							rulebookParser.afterWord();
-							finished = rulebookParser.find("]|],", ['\t', ' ', '\n']);
-							if(!finished) rulebookParser.expecting(",", ['\t', ' ', '\n']);
-							rulebookParser.nextWord();
+							parser.nextWord();
+							result.classes.push(`${token}/${parser.word()}`);
+							parser.afterWord();
+							finished = parser.find("]|,]", tsnExceptions);
+							if(!finished) parser.expecting(",");
 						}
-						
-						result.classes.push(loc);
-						break;
-					default:
-						result.classes.push(token);
-						break;
+						parser.afterContext();
+					}else{
+						parser.previous();
+						result.classes.push(`${parser.word()}`);
+						parser.next();
 					}
-					rulebookParser.nextContext();
-					console.log(rulebookParser.line());
-					break;
+					if(!parser.find("]|,]", tsnExceptions)){
+						parser.expecting(",");
+						parser.next();
+					}else if(parser.find(",]", tsnExceptions)){
+						parser.next();
+					}
+					
 				}
-				
+				parser.expecting("];", tsnExceptions);
+				parser.afterContext();
+				console.log(parser.line());
 				break;
 			}
 			
 			break;
 		}
 		
-		console.log(result);
+		console.dir(JSON.stringify(result, null, "    "));
 	}
 }
 
@@ -88,6 +94,7 @@ class Parser {
 		this._currentSentence = undefined;
 		this._currentContext = undefined;
 		this._currentLine = undefined;
+		this._scope = 0;
 		
 		this._updateWord();
 		this._updateLine();
@@ -110,13 +117,21 @@ class Parser {
 		const arr = matchStr.split('|');
 		for(let i = 0; i < arr.length; i++){
 			let found = true;
-			for(let c = 0; c < arr[i].length; c++){
-				const char = arr[i].charAt(c);
-				const sChar = this.char(c);
-				if(sChar !== char && !excp.has(sChar)){
-					found = false;
-					break;
+			let sp = this._charPointer;
+			let cp = 0;
+			while(cp < arr[i].length){
+				const char = arr[i].charAt(cp);
+				const sChar = this.charAtIndex(sp);
+				if(sp + cp >= this.length()) return false;
+				if(!excp.has(sChar)){
+					if(sChar === char){
+						cp++;
+					}else{
+						found = false;
+						break;
+					}
 				}
+				sp++;
 			}
 			if(found) return true;
 		}
@@ -128,14 +143,21 @@ class Parser {
 		const arr = matchStr.split('|');
 		for(let i = 0; i < arr.length; i++){
 			let found = true;
-			for(let c = 0; c < arr[i].length; c++){
-				const char = arr[i].charAt(c);
-				const sChar = this.char(c);
-				if(sChar !== char && !excp.has(sChar)){
-					found = false;
-					console.log(sChar, char, excp);
-					break;
+			let sp = this._charPointer;
+			let cp = 0;
+			while(cp < arr[i].length){
+				const char = arr[i].charAt(cp);
+				const sChar = this.charAtIndex(sp);
+				if(sp + cp >= this.length()) return false;
+				if(!excp.has(sChar)){
+					if(sChar === char){
+						cp++;
+					}else{
+						found = false;
+						break;
+					}
 				}
+				sp++;
 			}
 			if(found) return i;
 		}
@@ -145,7 +167,17 @@ class Parser {
 	expecting(matchStr, exceptions = []){
 		const result = this.match(matchStr, exceptions);
 		if(result !== undefined) return result;
-		throw new IllegalParseArgumentException(`Error parsing text.\nExpecting one of '${arr.join(", ")}'`);
+		throw new IllegalParseArgumentException(`Error parsing text.\nExpecting one of '${matchStr.split("|").join("' '")}'`);
+	}
+	
+	after(matchStr, exceptions = []){
+		const excp = new Set(exceptions);
+		const arr = matchStr.split('|');
+		const index = match(matchStr, exceptions);
+		for(let i = 0; i < arr[index].length; i++){
+			this.next();
+		}
+		return this.char();
 	}
 	
 	charAtIndex(index){
@@ -154,6 +186,10 @@ class Parser {
 	
 	char(offset = 0){
 		return this._text.charAt(this._charPointer + offset);
+	}
+	
+	chars(length){
+		return this._text.substring(this._charPointer, this._charPointer + length);
 	}
 	
 	_previous(){
@@ -262,6 +298,7 @@ class Parser {
 		while(next !== undefined && !this._wordSeparatorChars.has(next)){
 			next = this._next();
 		}
+		this._updateWord();
 	}
 	
 	_updateSentence(){
@@ -291,19 +328,32 @@ class Parser {
 		while(next !== undefined && !this._sentenceSeparatorChars.has(next)){
 			next = this._next();
 		}
+		this._updateWord();
 	}
 	
 	_parseContext(startChars, endChars){
 		const part = [];
+		let context = 0;
 		
-		let charPointer = this._charPointer;
+		let charPointer = this._charPointer - 1;
 		let char = this._text.charAt(charPointer);
-		while(charPointer >= 0 && !startChars.has(char)){
+		while(charPointer >= 0 && (!startChars.has(char) || context !== 0)){
+			if(startChars.has(char)) context++;
+			if(endChars.has(char)) context--;
 			charPointer--;
 			char = this._text.charAt(charPointer);
 		}
 		
-		let context = 0;
+		this._scope = 0;
+		let tCharPointer = this._charPointer;
+		char = this._text.charAt(tCharPointer);
+		while(tCharPointer >= 0){
+			if(startChars.has(char)) this._scope++;
+			if(endChars.has(char)) this._scope--;
+			tCharPointer--;
+			char = this._text.charAt(tCharPointer);
+		}
+		
 		charPointer++;
 		char = this._text.charAt(charPointer);
 		while(charPointer < this._text.length && (!endChars.has(char) || context !== 0)){
@@ -323,31 +373,39 @@ class Parser {
 			previous = this._previous();
 		}
 		
-		while(previous !== undefined && (startChars.has(previous) || endChars.has(previous))){
-			previous = this._previous();
+		if(startChars.has(next)){
+			while(next !== undefined && startChars.has(next)){
+				next = this._previous();
+			}
+		}else{
+			while(next !== undefined && endChars.has(next)){
+				next = this._previous();
+			}
 		}
 		
-		this.previous();
-		if(this.word() === undefined) this.previousWord();
+		this.next();
 	}
 	
 	_nextContext(startChars, endChars){
 		let next = this._next();
-		while(next !== undefined && !startChars.has(next) && !endChars.has(next)){
+		while(next !== undefined && (!startChars.has(next) && !endChars.has(next))){
 			next = this._next();
 		}
 		
-		while(next !== undefined && (startChars.has(next) || endChars.has(next))){
-			next = this._next();
+		if(startChars.has(next)){
+			while(next !== undefined && startChars.has(next)){
+				next = this._next();
+			}
+		}else{
+			while(next !== undefined && endChars.has(next)){
+				next = this._next();
+			}
 		}
-		
-		this.next();
-		if(this.word() === undefined) this.nextWord();
+		this.previous();
 	}
 	
 	_updateContext(){
 		this._currentContext = this._parseContext(this._contextStartChars, this._contextEndChars);
-		if(this._contextStartChars.has(this.char()) || this._contextEndChars.has(this.char())) this._currentContext = undefined;
 	}
 	
 	context(){
@@ -364,6 +422,24 @@ class Parser {
 		this._nextContext(this._contextStartChars, this._contextEndChars);
 		this._updateContext();
 		return this.context();
+	}
+	
+	afterContext(){
+		let next = this._next();
+		while(next !== undefined && !this._contextEndChars.has(next)){
+			next = this._next();
+		}
+		
+		while(next !== undefined && this._contextEndChars.has(next)){
+			next = this._next();
+		}
+		
+		this._updateContext();
+		return this.context();
+	}
+	
+	scope(){
+		return this._scope;
 	}
 	
 	_updateLine(){
@@ -384,5 +460,13 @@ class Parser {
 		this._nextPart(this._lineSeparators, this._lineSeparators);
 		this._updateLine();
 		return this.line();
+	}
+	
+	length(){
+		return this._text.length;
+	}
+	
+	end(){
+		return this._charPointer === this.length() - 1;
 	}
 }
