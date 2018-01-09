@@ -104,33 +104,17 @@ class Loader{
 		});
 	}
 	
-	static loadRulebook(fileLocation, callback){
-		this.loadFile(fileLocation + rulebookFileExt, function(file){
-			callback(Rulebook.parseRulebook(file));
+	static loadRulebook(fileLocation, fileName, callback){
+		this.loadFile(`${fileLocation}/${fileName}${rulebookFileExt}`, function(file){
+			callback(Rulebook.parseRulebook(file, fileLocation));
 		})
 	}
 	
-	static loadPlayerFile(fileLocation, callback){
-		return null;
-	}
-	
-	static loadSkillSet(fileLocation, callback){
-		return null;
-	}
-	
-	static loadSpellbook(fileLocation, callback){
-		return null;
-	}
-	
-	static loadInventory(fileLocation, callback){
-		return null;
-	}
-	
-	static loadItemShop(fileLocation, callback){
-		return null;
-	}
-	
-	static loadEncounter(fileLocation, callback){
-		return null;
+	static loadRulebookClass(fileLocation, fileName, callback, returnIndex){
+		this.loadFile(`${fileLocation}/${fileName}${Loader.rulebookClassExt}`, function(file){
+			callback(file, returnIndex);
+		})
 	}
 }
+
+Loader.rulebookClassExt = ".rbkc";

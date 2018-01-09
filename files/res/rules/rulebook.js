@@ -11,16 +11,14 @@ const tsnExceptions = ['\t', ' ', '\n'];
 
 class Rulebook {
 	
-	static parseRulebook(file){
+	static parseRulebook(file, fileLocation){
 		
-		const rulebook = {
-				classes: [],
-		}
+		const readFiles = {};
 		
 		let text = file.replace(/(\/\*(.|\n)*?\*\/)|(\/\/.*)/g, '');
 		text = file.replace(/\r\n/g, '\n');
 		
-		const parser = new Parser(
+		let parser = new Parser(
 				text,
 				[':', '[', ']', ',', '/', '\n', '\t', ' '],
 				[':', '[', ']', ',', '\n', '\t', ' '],
@@ -29,11 +27,12 @@ class Rulebook {
 		);
 		
 		let token = "";
-		const result = {};
+		
+		let fileDone = false;
 		while(true){
-			switch(parser.expecting("Classes")){
+			switch(parser.match("Classes")){
 			case 0:
-				result.classes = [];
+				readFiles.classes = [];
 				parser.afterWord();
 				parser.expecting(":[", tsnExceptions);
 				parser.nextContext();
@@ -48,8 +47,11 @@ class Rulebook {
 						parser.next();
 						let finished = parser.find("]", tsnExceptions);
 						while(!finished){
+							const cls = {};
 							parser.nextWord();
-							result.classes.push(`${token}/${parser.word()}`);
+							cls.location = `${token}/${parser.word()}`;
+							cls.name = parser.word();
+							readFiles.classes.push(cls);
 							parser.afterWord();
 							finished = parser.find("]|,]", tsnExceptions);
 							if(!finished) parser.expecting(",");
@@ -57,7 +59,7 @@ class Rulebook {
 						parser.afterContext();
 					}else{
 						parser.previous();
-						result.classes.push(`${parser.word()}`);
+						readFiles.classes.push(`${parser.word()}`);
 						parser.next();
 					}
 					if(!parser.find("]|,]", tsnExceptions)){
@@ -70,14 +72,45 @@ class Rulebook {
 				}
 				parser.expecting("];", tsnExceptions);
 				parser.afterContext();
-				console.log(parser.line());
+				break;
+			default:
+				parser.nextWord();
+				if(!parser.end()) throw new IllegalParseArgumentException(`Unexpected token found. Expected the end of the document`);
+				fileDone = true;
 				break;
 			}
-			
-			break;
+			if(fileDone) break;
 		}
+			
+		console.objStr(readFiles);
 		
-		console.dir(JSON.stringify(result, null, "    "));
+		Util.syncListProcess(readFiles.classes, 
+				(cls, index, callback) => {
+					Loader.loadRulebookClass(fileLocation, cls.location, index, callback)
+					}, 
+					
+				(file, index) => {
+					readFiles.classes[index].parser = new Parser(
+							file,
+							[':', '[', ']', ',', '/', '\n', '\t', ' ', '{', '}', '(', ')', ';', '.'], //word
+							[':', '[', ']', ',', '\n', '\t', '{', '}', '(', ')', ';'], //sentence
+							['[', '{', '('], //context start
+							[']', '}', ')'] //context end
+						);
+					}, 
+					
+				() => {
+					console.objStr(readFiles);
+					console.log("----------------------------------------------------");
+					console.log("====================================================");
+					console.log("----------------------------------------------------");
+					for(let clsI in readFiles.classes){
+						const cls = readFiles.classes[clsI];
+						parser = cls.parser;
+						console.log(parser.word());
+					}
+				}
+			);
 	}
 }
 
@@ -161,13 +194,13 @@ class Parser {
 			}
 			if(found) return i;
 		}
-		return undefined;
+		return -1;
 	}
 	
 	expecting(matchStr, exceptions = []){
 		const result = this.match(matchStr, exceptions);
-		if(result !== undefined) return result;
-		throw new IllegalParseArgumentException(`Error parsing text.\nExpecting one of '${matchStr.split("|").join("' '")}'`);
+		if(result !== -1) return result;
+		throw new IllegalParseArgumentException(`Unexpected token found.\nExpecting one of '${matchStr.split("|").join("' '")}'`);
 	}
 	
 	after(matchStr, exceptions = []){
