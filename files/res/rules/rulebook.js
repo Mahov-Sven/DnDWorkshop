@@ -8,12 +8,14 @@ const sentenceSeparators = [' ', '{', '}','[', ']', '\'', ':', ';', '"', '\'', '
 const contextStartSeparators = ['{', '[', '('];
 const contextEndSeparators = ['}', ']', ')'];
 const tsnExceptions = ['\t', ' ', '\n'];
+const noExceptions = [];
 
 class Rulebook {
 	
 	static parseRulebook(file, fileLocation){
 		
 		const readFiles = {};
+		const rulebook = new DSBase();
 		
 		let text = file.replace(/(\/\*(.|\n)*?\*\/)|(\/\/.*)/g, '');
 		text = file.replace(/\r\n/g, '\n');
@@ -104,13 +106,88 @@ class Rulebook {
 					console.log("----------------------------------------------------");
 					console.log("====================================================");
 					console.log("----------------------------------------------------");
+					
 					for(let clsI in readFiles.classes){
 						const cls = readFiles.classes[clsI];
-						parser = cls.parser;
-						console.log(parser.word());
+						const dsclass = new DSClass();
+						
+						dsclass.nameFull = cls.location.replace(/\//g, ".");
+						rulebook.classes[dsclass.nameFull] = dsclass;
 					}
+					
+					for(let clsI in readFiles.classes){
+						const cls = readFiles.classes[clsI];
+						const dsclass = rulebook.classes[cls.location.replace(/\//g, ".")];
+						parser = cls.parser;
+						console.log(parser.line());
+						
+						let count = 0;
+						while(true && count < 100){
+							count++;
+							switch(parser.match("import|class", noExceptions)){
+							case 0:
+								let importName = parser.nextWord();
+								parser.afterWord();
+								while(parser.char() === '.'){
+									parser.next();
+									importName += '.' + parser.word();
+									parser.afterWord();
+								}
+								dsclass.imports[importName] = rulebook.classes[importName];
+								console.log(importName);
+								break;
+							case 1:
+								//WORKING ON CLASS
+							default:
+								parser.next();
+								break;
+							}
+						}
+						
+						
+						
+						console.objStr(dsclass);
+						break;
+					}
+					//console.objStr(rulebook);
 				}
 			);
+	}
+}
+
+class DSBase {
+	constructor(){
+		this.classes = {};
+		this.objects = [];
+		this.methods = {};
+	}
+}
+
+class DSClass {
+	constructor(){
+		this.imports = {};
+		this.supers = {};
+		this.name = undefined;
+		this.nameFull = undefined;
+		this.methods = {};
+		this.fields = {};
+	}
+}
+
+class DSMethod {
+	constructor(){
+		this.method = undefined;
+		this.name = undefined;
+		this.description = undefined;
+		this.returnType = undefined;
+		this.paramDescriptions = {}
+	}
+}
+
+class DSObject {
+	constructor(){
+		this.proto = undefined;
+		this.fields = {};
 	}
 }
 
