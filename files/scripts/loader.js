@@ -1,5 +1,5 @@
-var htmlExt = ".dndhtml";
-var menuFileExt = ".dndmf";
+var htmlExt = ".dhtml";
+var menuFileExt = ".dmf";
 var rulebookFileExt = ".rbk";
 var srtRegex = /[\n\r\s\t]+/g;
 var menuIdPrepend = "Menu-Id-";

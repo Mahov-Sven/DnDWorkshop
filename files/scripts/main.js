@@ -23,6 +23,10 @@ $(document).ready(function () {
 		disableTab(2);
 	});
 	
+	Loader.loadHTML("files/html/loginPrompt", function(html){
+		Loader.loadIntoPage("CONTENT", html);
+	});
+	
 	Loader.loadRulebook("files/res/rules/StandardLibrary", "StandardLibrary", function(html){});
 
 	// ------------- END OF INITIALIZATION STUFF -------------
@@ -49,13 +53,13 @@ $(document).ready(function () {
 			case 0:
 				break;
 
-			case 1:
+			case 1: //Dice Button
 				$("#CANVAS_OVERLAY").addClass("hide");
 				$("#BUTTON_DICE").removeClass("BUTTON_DICE_SHOW");
 				DICE.stop();
 				break;
 
-			case 2:
+			case 2: //Menu Button
 				$("#BUTTON_MENU").removeClass("BUTTON_MENU_SHOW");
 				$("#MENU_ANIM_BAR_T").stop().removeClass("RotateDown45").animate({width: "50%"});
 				$("#MENU_ANIM_BAR_M").stop().removeClass("Fade");
@@ -71,13 +75,13 @@ $(document).ready(function () {
 			case 0:
 				break;
 
-			case 1:
+			case 1: //Dice Button
 				$("#CANVAS_OVERLAY").removeClass("hide");
 				$("#BUTTON_DICE").addClass("BUTTON_DICE_SHOW");
 				DICE.start();
 				break;
 
-			case 2:
+			case 2: //Menu Button
 				$("#BUTTON_MENU").addClass("BUTTON_MENU_SHOW");
 				$("#MENU_ANIM_BAR_T").stop().addClass("RotateDown45").animate({width: "70%"});
 				$("#MENU_ANIM_BAR_M").stop().addClass("Fade");
@@ -107,10 +111,4 @@ $(document).ready(function () {
 	$("#MENU").stop().animate({top: -$("#MENU").height() }, function(){$("#MENU").hide()} );
 
 	// ------------- END OF JQUERY STUFF -------------
-
-	// ------------- Temporary for testing -------------
-	Loader.loadHTML("files/html/loginPrompt", function(html){
-		Loader.loadIntoPage("CONTENT", html);
-	});
-	// ------------- End Temporary -------------
 });
